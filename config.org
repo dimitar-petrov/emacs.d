@@ -1,0 +1,220 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Dimitar Petrov
+
+* Personal Information
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Dimitar Petrov"
+        user-mail-address "petrov.dimp@gmail.com")
+#+END_SRC
+* Initializa MELPA
+#+BEGIN_SRC emacs-lisp
+  (when (>= emacs-major-version 24)
+    (setq-default
+     load-prefer-newer t
+     package-enable-at-startup nil)
+    (package-initialize)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+    (unless (package-installed-p 'delight)
+      (package-refresh-contents)
+      (package-install 'delight))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package)))
+#+END_SRC
+* Themes
+** Cyberpunk theme
+The cyberpunk theme is dark and colorful. The code bellow removes the boxes around the modeline
+#+BEGIN_SRC emacs-lisp
+(use-package cyberpunk-theme
+  :if (window-system)
+  :ensure t
+  :init
+  (progn
+    (load-theme 'cyberpunk t)
+    (set-face-attribute `mode-line nil
+                        :box nil)
+    (set-face-attribute `mode-line-inactive nil
+                        :box nil)))
+#+END_SRC
+** Solarized theme
+Here's some configuration for bbatsov's solarized themes.
+#+BEGIN_SRC emacs-lisp
+  (use-package solarized-theme
+    :defer 10
+    :init
+    (setq solarized-use-variable-pith nil)
+    :ensure t)
+#+END_SRC
+** Monokai theme
+#+BEGIN_SRC emacs-lisp
+  (use-package monokai-theme
+    :ensure t
+    :init
+    (setq monokai-use-variable-pitch nil))
+#+END_SRC
+** Waher theme
+#+BEGIN_SRC emacs-lisp
+    (use-package waher-theme
+      :if (window-system)
+      :ensure t
+      :init)
+#+END_SRC
+** Spacemacs theme
+#+BEGIN_SRC emacs-lisp
+   (use-package spacemacs-theme
+        :ensure t
+        :init)
+#+END_SRC
+** Convenient theme functions
+#+BEGIN_SRC emacs-lisp
+  (defun switch-theme (theme)
+    "Disables any currently active themes and loads THEME."
+    ;; This interactive call is taken from `load-theme'
+    (interactive
+     (list
+      (intern (completing-read "Load custom theme: "
+                               (mapc 'symbol-name
+                                     (custom-available-themes))))))
+    (let ((enabled-themes custom-enabled-themes))
+      (mapc #'disable-theme custom-enabled-themes)
+      (load-theme theme t)))
+
+  (defun disable-active-themes ()
+    "Disables any currently active themes listed in `custom-enabled-themes'."
+    (interactive)
+    (mapc #'disable-theme custom-enabled-themes))
+
+  (bind-key "s-<f12>" 'switch-theme)
+  (bind-key "s-<f11>" 'disable-active-themes)
+#+END_SRC
+* Font
+
+Source Code Pro is a nice monospaced font.
+Here is how we tell Emacs to use the font we want to use.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist
+               '(font . "Source Code Pro-13"))
+#+END_SRC
+* Evil Mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package evil
+     :ensure t
+     :init)
+   (require 'evil)
+   (evil-mode t)
+ #+END_SRC
+  
+** Rebinding window navigation in Evil mode in emacs
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load "evil"
+    '(progn
+       (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+       (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+       (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+       (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+       (define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
+       (define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
+       (define-key evil-motion-state-map (kbd "C-k") 'evil-window-up)
+       (define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)))
+#+END_SRC
+** FIX: Org mode with Evil fails cycle with TAB in terminal emacs 
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+#+END_SRC
+
+* General configuration
+** Turn off bars
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (toggle-scroll-bar -1)
+  (tool-bar-mode -1)
+#+END_SRC
+** Adjust windows margins
+#+BEGIN_SRC emacs-lisp
+  (setq-default left-margin-width 0 right-margin-width 0) ; Define new widths.
+   (set-window-buffer nil (current-buffer)) ; Use them now.
+#+END_SRC
+** Backups
+This is one of the things people usually want to change right away. Emacs saves backup files in the current directory.
+ #+BEGIN_SRC emacs-lisp
+   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+ #+END_SRC
+
+** HTTP
+#+BEGIN_SRC emacs-lisp
+  (use-package ob-http
+    :ensure t)
+#+END_SRC
+** Diagrams and graphics
+Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sachachua.com/evil-plans for examples and source. 
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-ditaa-jar-path "/usr/share/java/ditaa/ditaa-0_9.jar")
+  (setq org-startup-with-inline-images t)
+  (use-package org
+    :config
+    (progn
+      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((dot . t)
+         (ditaa . t)
+         (sh . t)
+         (http . t)
+         (perl . t)
+         (python . t)
+         (R . t)))
+      (add-to-list 'org-src-lang-modes '("dot" . graphviz-dot))))
+#+END_SRC
+
+** Literate programming
+*** Editing source code
+I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-window-setup 'current-window)
+#+END_SRC
+
+** Helm-interactive completion
+   
+Help makes it easy to complete various things. I find it to be easier to configure that ido in order to get completion in as many places as possible, although I prefer ido's way of switching buffers.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :diminish helm-mode
+    :init
+    (progn
+      (require 'helm-config)
+      (setq helm-candidate-number-limit 100)
+      ;; From https://gist.github.com/antifuchs/9238468
+      (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+            helm-input-idle-delay 0.01  ; this actually updates things
+                                          ; reeeelatively quickly.
+            helm-yas-display-key-on-candidate t
+            helm-quick-update t
+            helm-M-x-requires-pattern nil
+            helm-ff-skip-boring-files t)
+      (helm-mode))
+    :bind (("C-c h" . helm-mini)
+           ("C-h a" . helm-apropos)
+           ("C-x C-b" . helm-buffers-list)
+           ("C-x b" . helm-buffers-list)
+           ("M-y" . helm-show-kill-ring)
+           ("M-x" . helm-M-x)
+           ("C-x c o" . helm-occur)
+           ("C-x c s" . helm-swoop)
+           ("C-x c y" . helm-yas-complete)
+           ("C-x c Y" . helm-yas-create-snippet-on-region)
+           ("C-x c SPC" . helm-all-mark-rings)))
+
+#+END_SRC
+
+Also, visual-line-mode is so much better than auto-fill-mode. It does not actually break the text into multiple lines - it only looks that way
+
+#+BEGIN_SRC emacs-lisp
+  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+#+END_SRC
