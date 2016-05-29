@@ -1,0 +1,7 @@
+* Dimitar Emacs Configuration
+
+My personal emacs configuration is hosted here.
+Configuration is defined using org mode and the following two files are used.
+
+- init.el - bootstraps use-package and loads config.org
+- config.org -  majority of the configuration is here together with detailed documentation
