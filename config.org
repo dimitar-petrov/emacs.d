@@ -136,6 +136,15 @@ Here is how we tell Emacs to use the font we want to use.
   (setq-default left-margin-width 0 right-margin-width 0) ; Define new widths.
    (set-window-buffer nil (current-buffer)) ; Use them now.
 #+END_SRC
+** Sane defaults
+Some default configurations
+#+BEGIN_SRC emacs-lisp
+  ;; Answering just 'y' or 'n' will do
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; Turn off the blinking cursor
+  (blink-cursor-mode -1)
+#+END_SRC
 ** Backups
 This is one of the things people usually want to change right away. Emacs saves backup files in the current directory.
  #+BEGIN_SRC emacs-lisp
