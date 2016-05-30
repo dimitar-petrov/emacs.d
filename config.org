@@ -124,6 +124,26 @@ Here is how we tell Emacs to use the font we want to use.
               (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
 #+END_SRC
 
+** Display relative numbers for the current buffer
+#+BEGIN_SRC emacs-lisp
+  (use-package relative-line-numbers
+    :ensure t
+    :init)
+  (global-relative-line-numbers-mode)
+
+  (defun relative-abs-line-numbers-format (offset)
+    "The default formatting function.
+  Return the absolute value of OFFSET, converted to string."
+    (if (= 0 offset)
+        (number-to-string (line-number-at-pos))
+      (number-to-string (abs offset))))
+
+  (setq relative-line-numbers-format 'relative-abs-line-numbers-format)
+#+END_SRC
+*** Disable line numbers in org-mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
+#+END_SRC
 * General configuration
 ** Turn off bars
 #+BEGIN_SRC emacs-lisp
@@ -144,6 +164,9 @@ Some default configurations
 
   ;; Turn off the blinking cursor
   (blink-cursor-mode -1)
+
+  ;; make the left and right fringe disappear
+  (fringe-mode 0)
 #+END_SRC
 ** Backups
 This is one of the things people usually want to change right away. Emacs saves backup files in the current directory.
@@ -179,6 +202,14 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
 #+END_SRC
 
 ** Literate programming
+** Powerline
+#+BEGIN_SRC emacs-lisp
+  (use-package powerline
+    :ensure t)
+  (require 'powerline)
+  (powerline-vim-theme)
+  (display-time-mode t)
+#+END_SRC
 *** Editing source code
 I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
 
@@ -227,3 +258,13 @@ Also, visual-line-mode is so much better than auto-fill-mode. It does not actual
   (remove-hook 'text-mode-hook #'turn-on-auto-fill)
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 #+END_SRC
+** Smooth scrolling
+In order to disable the jumpy scrolling
+#+BEGIN_SRC emacs-lisp
+  (use-package smooth-scrolling
+    :ensure t
+    :init)
+  (setq scroll-margin 5 scroll-conservatively 9999 scroll-step 1)
+#+END_SRC
+* Links
+** [[http://juanjoalvarez.net/es/detail/2014/sep/19/vim-emacsevil-chaotic-migration-guide/][Evil Migration Guide]]
