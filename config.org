@@ -22,6 +22,10 @@
       (package-install 'use-package)))
 #+END_SRC
 * Themes
+** Use fancy lambdas
+#+BEGIN_SRC emacs-lisp
+  (global-prettify-symbols-mode t)
+#+END_SRC
 ** Cyberpunk theme
 The cyberpunk theme is dark and colorful. The code bellow removes the boxes around the modeline
 #+BEGIN_SRC emacs-lisp
@@ -30,7 +34,6 @@ The cyberpunk theme is dark and colorful. The code bellow removes the boxes arou
   :ensure t
   :init
   (progn
-    (load-theme 'cyberpunk t)
     (set-face-attribute `mode-line nil
                         :box nil)
     (set-face-attribute `mode-line-inactive nil
@@ -43,6 +46,7 @@ Here's some configuration for bbatsov's solarized themes.
     :defer 10
     :init
     (setq solarized-use-variable-pith nil)
+    (load-theme 'solarized-dark t)
     :ensure t)
 #+END_SRC
 ** Monokai theme
@@ -144,6 +148,47 @@ Here is how we tell Emacs to use the font we want to use.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
 #+END_SRC
+* Org Mode 
+** Display Preferences
+Display an outline of pretty bullets instead of list of asterisks
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t)
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-bullets-mode t)))
+  (setq org-hide-leading-stars t)
+#+END_SRC
+
+Also change the usual ellipsis(...) with a little downward-pointing that org displays when there is stuff under a header
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis "⤵")
+#+END_SRC
+Use syntax highlighting in source blocks while editing.
+#+BEGIN_SRC emacs-lisp
+(setq org-src-fontify-natively t)
+#+END_SRC
+
+Make TAB act as if it were issued in a buffer of the language's major mode
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+** Add Org-Pomodoro
+You can start a pomodoro for the task at point or select one from the last tasks that you clocked time for. Each clocked-in pomodoro starts a timer of 25 minutes and after each pomodoro break timer of 5 minutes is started automatically. Every 4 breaks long break is started with 20 minutes. All values are customizable.
+#+BEGIN_SRC emacs-lisp
+  (use-package org-pomodoro
+    :ensure t)
+#+END_SRC
+** Editing source code
+I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-window-setup 'current-window)
+#+END_SRC
 * General configuration
 ** Turn off bars
 #+BEGIN_SRC emacs-lisp
@@ -210,12 +255,6 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
   (powerline-vim-theme)
   (display-time-mode t)
 #+END_SRC
-*** Editing source code
-I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-src-window-setup 'current-window)
-#+END_SRC
 
 ** Helm-interactive completion
    
@@ -266,5 +305,7 @@ In order to disable the jumpy scrolling
     :init)
   (setq scroll-margin 5 scroll-conservatively 9999 scroll-step 1)
 #+END_SRC
+
 * Links
 ** [[http://juanjoalvarez.net/es/detail/2014/sep/19/vim-emacsevil-chaotic-migration-guide/][Evil Migration Guide]]
+** [[https://github.com/hrs/dotfiles/tree/master/emacs.d][Harry Schwartz Emacs Configuration]]
