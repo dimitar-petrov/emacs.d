@@ -316,6 +316,12 @@ Install and enable yaml mode
   (tool-bar-mode -1)
 #+END_SRC
 
+** Disable emacs welcome screen
+   
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+#+END_SRC
+
 ** Adjust windows margins
 
 #+BEGIN_SRC emacs-lisp
