@@ -1,5 +1,5 @@
-#+TITLE: Emacs Configuration
-#+AUTHOR: Dimitar Petrov
+#+TITLE:Emacs Configuration
+#+AUTHOR:Dimitar Petrov
 #+STARTUP: overview
 
 * Personal Information
@@ -25,7 +25,18 @@
       (package-refresh-contents)
       (package-install 'use-package)))
 #+END_SRC
-  
+
+* Define Personal Functions  
+** Tone Down Fringes
+#+BEGIN_SRC emacs-lisp
+  ;; Function
+  (defun my-tone-down-fringes ()
+    "Changes the leader background to be the same as THEME background color."
+    (set-face-attribute 'fringe nil
+                        :foreground (face-foreground 'default)
+                        :background (face-background 'default)))
+#+END_SRC
+
 * Themes
 ** Use fancy lambdas
 
@@ -56,7 +67,6 @@ Here's some configuration for bbatsov's solarized themes.
     :defer 10
     :init
     (setq solarized-use-variable-pith nil)
-    (load-theme 'solarized-dark t)
     :ensure t)
 #+END_SRC
 
@@ -78,6 +88,14 @@ Here's some configuration for bbatsov's solarized themes.
       :init)
 #+END_SRC
 
+** Zenburn theme
+   
+#+BEGIN_SRC emacs-lisp
+  (use-package zenburn-theme
+    :ensure t
+    :init)
+#+END_SRC
+
 ** Spacemacs theme
 
 #+BEGIN_SRC emacs-lisp
@@ -89,25 +107,29 @@ Here's some configuration for bbatsov's solarized themes.
 ** Convenient theme functions
 
 #+BEGIN_SRC emacs-lisp
-  (defun switch-theme (theme)
-    "Disables any currently active themes and loads THEME."
-    ;; This interactive call is taken from `load-theme'
-    (interactive
-     (list
-      (intern (completing-read "Load custom theme: "
-                               (mapc 'symbol-name
-                                     (custom-available-themes))))))
-    (let ((enabled-themes custom-enabled-themes))
-      (mapc #'disable-theme custom-enabled-themes)
-      (load-theme theme t)))
+      (defun switch-theme (theme)
+        "Disables any currently active themes and loads THEME."
+        ;; This interactive call is taken from `load-theme'
+        (interactive
+         (list
+          (intern (completing-read "Load custom theme: "
+                                   (mapc 'symbol-name
+                                         (custom-available-themes))))))
+        (let ((enabled-themes custom-enabled-themes))
+          (mapc #'disable-theme custom-enabled-themes)
+          (load-theme theme t))
+        (my-tone-down-fringes)
+  )
 
-  (defun disable-active-themes ()
-    "Disables any currently active themes listed in `custom-enabled-themes'."
-    (interactive)
-    (mapc #'disable-theme custom-enabled-themes))
+  (switch-theme 'zenburn)
 
-  (bind-key "s-<f12>" 'switch-theme)
-  (bind-key "s-<f11>" 'disable-active-themes)
+      (defun disable-active-themes ()
+        "Disables any currently active themes listed in `custom-enabled-themes'."
+        (interactive)
+        (mapc #'disable-theme custom-enabled-themes))
+
+      (bind-key "s-<f12>" 'switch-theme)
+      (bind-key "s-<f11>" 'disable-active-themes)
 #+END_SRC
 
 * Font
@@ -120,6 +142,18 @@ Here is how we tell Emacs to use the font we want to use.
 #+END_SRC
 
 * Evil Mode
+** Leader key
+In oder to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-leader
+    :ensure t)
+  (setq evil-leader/in-all-states 1)
+  (global-evil-leader-mode)
+  (evil-leader/set-leader ",")
+#+END_SRC
+
+Now load evil package and enable evil-mode
 
  #+BEGIN_SRC emacs-lisp
    (use-package evil
@@ -132,16 +166,15 @@ Here is how we tell Emacs to use the font we want to use.
 ** Rebinding window navigation in Evil mode in emacs
 
 #+BEGIN_SRC emacs-lisp
-  (eval-after-load "evil"
-    '(progn
-       (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-       (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-       (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-       (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-       (define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
-       (define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
-       (define-key evil-motion-state-map (kbd "C-k") 'evil-window-up)
-       (define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)))
+    (eval-after-load "evil"
+      '(progn
+;;         (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+;;         (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+;;         (define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
+;;         (define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
+         (evil-leader/set-key "k" 'evil-window-next)
+         (evil-leader/set-key "j" 'evil-window-prev)))
+
 #+END_SRC
 
 ** FIX: Org mode with Evil fails cycle with TAB in terminal emacs 
@@ -174,6 +207,13 @@ Here is how we tell Emacs to use the font we want to use.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
+#+END_SRC
+
+*** Define Leader shortcuts 
+    
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key "l" 'evil-next-buffer)
+  (evil-leader/set-key "h" 'evil-prev-buffer)
 #+END_SRC
 
 * Org Mode 
@@ -243,6 +283,30 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+END_SRC
 
+* Yaml Mode
+
+Install and enable yaml mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :ensure t)
+
+  (add-hook 'yaml-mode-hook
+            (lambda ()
+              (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+#+END_SRC  
+
+* Use smex to handle M-x with ido
+
+#+BEGIN_SRC emacs-lisp
+  (use-package smex
+    :ensure t)
+
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+#+END_SRC
+
 * General configuration
 ** Turn off bars
 
@@ -269,8 +333,18 @@ Some default configurations
   ;; Turn off the blinking cursor
   (blink-cursor-mode -1)
 
-  ;; make the left and right fringe disappear
-  (fringe-mode 0)
+#+END_SRC
+ 
+Enable line highlight
+
+#+BEGIN_SRC emacs-lisp
+  (global-hl-line-mode t)
+#+END_SRC
+
+Disable Indent-Tabs-mode
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
 #+END_SRC
 
 ** Backups
@@ -360,6 +434,28 @@ Also, visual-line-mode is so much better than auto-fill-mode. It does not actual
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 #+END_SRC
 
+** Projectile
+
+Install projectile and helm-projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish projectile-mode
+    :config
+    (progn
+      (setq projectile-require-project-root nil)
+      (setq projectile-keymap-prefix (kbd "C-c p"))
+      (setq projectile-completion-system 'default)
+      (setq projectile-enable-caching t)
+      (setq projectile-indexing-method 'alien)
+      (add-to-list 'projectile-globally-ignored-files "node-modules"))
+    :config
+    (projectile-global-mode))
+  (use-package helm-projectile
+    :ensure t)
+#+END_SRC
+
 ** Smooth scrolling
 
 In order to disable the jumpy scrolling
@@ -374,3 +470,17 @@ In order to disable the jumpy scrolling
 ** [[http://juanjoalvarez.net/es/detail/2014/sep/19/vim-emacsevil-chaotic-migration-guide/][Evil Migration Guide]]
 ** [[https://github.com/hrs/dotfiles/tree/master/emacs.d][Harry Schwartz Emacs Configuration]]
    
+
+* Configure ido (disabled)
+  
+#+BEGIN_SRC emacs-lisp
+;  (setq ido-enable-flex-matching t)
+;  (setq ido-everywhere t)
+;  (ido-mode 1)
+;  (ido-ubiquitous)
+;  (flx-ido-mode 1) ; better/faster matching
+;  (setq ido-create-new-buffer 'always) ; don't confirm to create new buffers
+;  (ido-vertical-mode 1)
+;  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+#+END_SRC
+ 
