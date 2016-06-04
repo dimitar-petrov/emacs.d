@@ -273,14 +273,24 @@ I do not want to get distracted by the same code in the other window, so i want 
    The following sets a default target file for notes, and defines a global key for capturing new material.
 
 #+BEGIN_SRC emacs-lisp
+  ;; Set to the location of my Org files on the NFS Share
+  (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
+
   (setq org-default-notes-file (concat org-directory "/notes.org"))
 
   (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/org/gtd.org" "Tasks")
+        '(("t" "Todo" entry (file+headline
+                             (concat org-directory "/NixOrg/gtd.org") "Tasks")
            "* TODO %?\n  %i\n  %a")
-          ("j" "Journal" entry (file+datetree "~/org/journal.org")
+          ("j" "Journal" entry (file+datetree
+                                (concat org-directory "/NixOrg/journal.org"))
            "* %?\nEntered on %U\n  %i\n  %a")))
 
+  ;; Set up org-mobile-directory
+  (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
+  ;; Set to the name of the file where new notes will be stored
+  (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
 #+END_SRC
 
 * Yaml Mode
@@ -475,8 +485,9 @@ In order to disable the jumpy scrolling
 * Links
 ** [[http://juanjoalvarez.net/es/detail/2014/sep/19/vim-emacsevil-chaotic-migration-guide/][Evil Migration Guide]]
 ** [[https://github.com/hrs/dotfiles/tree/master/emacs.d][Harry Schwartz Emacs Configuration]]
-   
+** [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua's Emacs Configuration]]
 
+   
 * Configure ido (disabled)
   
 #+BEGIN_SRC emacs-lisp
@@ -490,3 +501,5 @@ In order to disable the jumpy scrolling
 ;  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+END_SRC
  
+
+dssssssssssssssssssssssssssssssssssssssssssssss23ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss4
