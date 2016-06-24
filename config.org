@@ -153,7 +153,7 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
   (evil-leader/set-leader ",")
 #+END_SRC
 
-Now load evil package and enable evil-mode
+** Load evil package and enable evil-mode
 
  #+BEGIN_SRC emacs-lisp
    (use-package evil
@@ -162,7 +162,28 @@ Now load evil package and enable evil-mode
    (require 'evil)
    (evil-mode t)
  #+END_SRC
-  
+
+** Load evil-surround
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround
+    :ensure t)
+  (global-evil-surround-mode 1)
+#+END_SRC
+
+** Use escape to get out of as much stuff as possible.
+
+#+BEGIN_SRC emacs-lisp
+  (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
+  (define-key minibuffer-local-map (kbd "ESC") 'abort-recursive-edit)
+  (define-key minibuffer-local-ns-map (kbd "ESC") 'abort-recursive-edit)
+  (define-key minibuffer-local-completion-map (kbd "ESC") 'abort-recursive-edit)
+  (define-key minibuffer-local-must-match-map (kbd "ESC") 'abort-recursive-edit)
+  (define-key minibuffer-local-isearch-map (kbd "ESC") 'abort-recursive-edit)
+;  (bind-key "<escape>" 'helm-keyboard-quit helm-map)
+;  (bind-key "<escape>" 'helm-keyboard-quit helm-comp-read-map)
+#+END_SRC
+
 ** Rebinding window navigation in Evil mode in emacs
 
 #+BEGIN_SRC emacs-lisp
@@ -177,12 +198,49 @@ Now load evil package and enable evil-mode
 
 #+END_SRC
 
-** FIX: Org mode with Evil fails cycle with TAB in terminal emacs 
+** Commented
+#** FIX: Org mode with Evil fails cycle with TAB in terminal emacs 
+#
+##+BEGIN_SRC emacs-lisp
+#  (add-hook 'org-mode-hook
+#            (lambda ()
+#              (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+##+END_SRC
+
+** Bindings for Evil and Org-mode
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+  (dolist (state '(normal visual))
+;    (evil-define-key state org-mode-map (kbd "C-j") 'org-metadown)
+;    (evil-define-key state org-mode-map (kbd "C-k") 'org-metaup)
+    (evil-define-key state org-mode-map (kbd "<") 'org-metaleft)
+    (evil-define-key state org-mode-map (kbd ">") 'org-metaright)
+;    (evil-define-key state org-mode-map (kbd "M-h") 'org-metaleft)
+;    (evil-define-key state org-mode-map (kbd "M-l") 'org-metaright)
+    (evil-define-key state org-mode-map (kbd "M-J") 'org-shiftmetadown)
+    (evil-define-key state org-mode-map (kbd "M-K") 'org-shiftmetaup)
+    (evil-define-key state org-mode-map (kbd "M-H") 'org-shiftmetaleft)
+    (evil-define-key state org-mode-map (kbd "M-L") 'org-shiftmetaright)
+    (evil-define-key state org-mode-map (kbd "^") 'org-beginning-of-line)
+    (evil-define-key state org-mode-map (kbd "$") 'org-end-of-line))
+
+  (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+
+;  (bind-key "J" 'org-agenda-goto-date org-agenda-mode-map)
+;  (bind-key "j" 'evil-next-line org-agenda-mode-map)
+;  (bind-key "k" 'evil-previous-line org-agenda-mode-map)
+
+  ;;; evil surround pairs
+
+  (defun evil-surround-org-pairs ()
+    (push '(?= . ("=" . "=")) evil-surround-pairs-alist)
+    (push '(?~ . ("~" . "~")) evil-surround-pairs-alist))
+
+  (add-hook 'org-mode-hook 'evil-surround-org-pairs)
+
+  ;;; get out of editing a source block
+
+  (add-hook 'org-src-mode-map (lambda () (evil-local-set-key 'normal (kbd "Z Z") 'org-edit-src-exit)))
 #+END_SRC
 
 ** Display relative numbers for the current buffer
@@ -490,6 +548,13 @@ In order to disable the jumpy scrolling
     :ensure t
     :init)
   (setq scroll-margin 5 scroll-conservatively 9999 scroll-step 1)
+#+END_SRC
+
+** Set default browser to uzbl
+
+#+BEGIN_SRC emacs-lisp
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "uzbl")
 #+END_SRC
 
 * Links
