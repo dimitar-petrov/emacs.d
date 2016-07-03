@@ -121,7 +121,7 @@ Here's some configuration for bbatsov's solarized themes.
         (my-tone-down-fringes)
   )
 
-  (switch-theme 'zenburn)
+  (switch-theme 'solarized-dark)
 
       (defun disable-active-themes ()
         "Disables any currently active themes listed in `custom-enabled-themes'."
@@ -312,27 +312,28 @@ Make TAB act as if it were issued in a buffer of the language's major mode
 ** Org Modules
 
 #+BEGIN_SRC emacs-lisp
+  ; Enable habit tracking (and a bunch of other modules)
   (setq org-modules '(org-bbdb
-                        org-gnus
-                        org-drill
-                        org-info
-                        org-jsinfo
-                        org-habit
-                        org-irc
-                        org-mouse
-                        org-protocol
-                        org-annotate-file
-                        org-eval
-                        org-expiry
-                        org-interactive-query
-                        org-man
-                        org-collector
-                        org-panel
-                        org-screen
-                        org-toc))
-  (eval-after-load 'org
-   '(org-load-modules-maybe t))
-  (setq org-expiry-inactive-timestamps t)
+                            org-bibtex
+                            org-crypt
+                            org-gnus
+                            org-id
+                            org-info
+                            org-jsinfo
+                            org-habit
+                            org-inlinetask
+                            org-irc
+                            org-mew
+                            org-mhe
+                            org-protocol
+                            org-rmail
+                            org-vm
+                            org-wl
+                            org-w3m))
+
+  ; position the habit graph on the agenda to the right of the default
+  (setq org-habit-graph-column 50)
+
 #+END_SRC
 
 ** Keybindings
@@ -595,7 +596,7 @@ In order to disable the jumpy scrolling
 ** [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua's Emacs Configuration]]
 ** [[https://spwhitton.name/blog/entry/eviltricks/][Evil Tricks]]
 ** [[https://github.com/aaronbieber/dotfiles/tree/master/configs/emacs.d/evil-rebellion][Aron Bieber Evil Rebelion]]
-   
+** [[http://doc.norang.ca/][Norang - Organize Your Life in Plain Text]]
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
