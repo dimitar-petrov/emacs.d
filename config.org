@@ -174,14 +174,23 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
 ** Use escape to get out of as much stuff as possible.
 
 #+BEGIN_SRC emacs-lisp
-  (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
-  (define-key minibuffer-local-map (kbd "ESC") 'abort-recursive-edit)
-  (define-key minibuffer-local-ns-map (kbd "ESC") 'abort-recursive-edit)
-  (define-key minibuffer-local-completion-map (kbd "ESC") 'abort-recursive-edit)
-  (define-key minibuffer-local-must-match-map (kbd "ESC") 'abort-recursive-edit)
-  (define-key minibuffer-local-isearch-map (kbd "ESC") 'abort-recursive-edit)
-;  (bind-key "<escape>" 'helm-keyboard-quit helm-map)
-;  (bind-key "<escape>" 'helm-keyboard-quit helm-comp-read-map)
+    (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
+    (define-key minibuffer-local-map (kbd "ESC") 'abort-recursive-edit)
+    (define-key minibuffer-local-ns-map (kbd "ESC") 'abort-recursive-edit)
+    (define-key minibuffer-local-completion-map (kbd "ESC") 'abort-recursive-edit)
+    (define-key minibuffer-local-must-match-map (kbd "ESC") 'abort-recursive-edit)
+    (define-key minibuffer-local-isearch-map (kbd "ESC") 'abort-recursive-edit)
+  ;  (bind-key "<escape>" 'helm-keyboard-quit helm-map)
+  ;  (bind-key "<escape>" 'helm-keyboard-quit helm-comp-read-map)
+
+  ;; Make movement keys work like they should
+  (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+
+  ; Make horizontal movement cross lines                                    
+  (setq-default evil-cross-lines t)
 #+END_SRC
 
 ** Rebinding window navigation in Evil mode in emacs
