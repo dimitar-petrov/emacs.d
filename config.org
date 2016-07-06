@@ -337,7 +337,6 @@ Make TAB act as if it were issued in a buffer of the language's major mode
                             org-protocol
                             org-rmail
                             org-vm
-                            org-wl
                             org-w3m))
 
   ; position the habit graph on the agenda to the right of the default
@@ -381,7 +380,7 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline
                              (concat org-directory "/NixOrg/gtd.org") "Tasks")
-           "* TODO %?\n  %i\n  %a")
+           "* TODO %?\n  %i\n  %a\n")
           ("j" "Journal" entry (file+datetree
                                 (concat org-directory "/NixOrg/journal.org"))
            "* %?\nEntered on %U\n  %i\n  %a")))
