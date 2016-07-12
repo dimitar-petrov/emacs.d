@@ -397,13 +397,13 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
   (setq org-capture-templates
         (quote (("t" "Todo" entry (file+headline
-                                   (concat org-directory "/NixOrg/gtd.org") "Tasks")
+                                   (concat org-directory "/NixOrg/refile.org") "Tasks")
                  "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("r" "Respond" entry (file
                                       (concat org-directory "/NixOrg/refile.org"))
                  "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
                 ("n" "Note" entry (file+headline 
-                                   (concat org-directory "/NixOrg/notes.org") "Notes")
+                                   (concat org-directory "/NixOrg/refile.org") "Notes")
                  "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("j" "Journal" entry (file+datetree 
                                       (concat org-directory "/NixOrg/journal.org"))
@@ -431,13 +431,14 @@ I do not want to get distracted by the same code in the other window, so i want 
 ** Org Agenda Configuration
    
 #+BEGIN_SRC emacs-lisp
-    (setq org-agenda-files
-          (list (concat org-directory "/NixOrg/gtd.org")
-                (concat org-directory "/NixOrg/refile.org")))
+  (setq org-agenda-files
+        (list (concat org-directory "/NixOrg")))
 
-    ;;       (concat org-directory "/NixOrg/notes.org")))
-    ;;              (concat org-directory "/NixOrg/business.org")
-    ;;              (concat org-directory "/NixOrg/personal.org")))
+  ;;            (concat org-directory "/NixOrg/gtd.org")
+  ;;            (concat org-directory "/NixOrg/refile.org")
+  ;;            (concat org-directory "/NixOrg/notes.org")))
+  ;;            (concat org-directory "/NixOrg/business.org")
+  ;;            (concat org-directory "/NixOrg/personal.org")))
 #+END_SRC
 
 ** Configure org-refile
