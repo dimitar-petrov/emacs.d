@@ -298,11 +298,7 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
   (use-package org
     :mode (("\\.org$" . org-mode))
     :ensure org-plus-contrib
-    :config
-    (progn
-      ;; config stuff
-      ))
-
+    )
 #+END_SRC
 
 ** Display Preferences
@@ -316,6 +312,8 @@ Display an outline of pretty bullets instead of list of asterisks
             (lambda ()
               (org-bullets-mode t)))
   (setq org-hide-leading-stars t)
+
+  (require 'ox-latex)
 #+END_SRC
 
 Also change the usual ellipsis(...) with a little downward-pointing that org displays when there is stuff under a header
@@ -1044,7 +1042,9 @@ Install and enable yaml mode
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-export-latex-classes
             '("koma-article"
-               "\\documentclass{scrartcl}"
+               "\\documentclass{scrartcl}
+               [NO-DEFAULT-PACKAGES]
+               [EXTRA]"
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
