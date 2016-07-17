@@ -1040,7 +1040,7 @@ Install and enable yaml mode
 **  Koma-article export class
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-export-latex-classes
+  (add-to-list 'org-latex-classes
             '("koma-article"
                "\\documentclass{scrartcl}
                [NO-DEFAULT-PACKAGES]
