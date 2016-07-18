@@ -1033,10 +1033,6 @@ Install and enable yaml mode
   (setq org-latex-pdf-process (list texcmd))
 #+END_SRC
 
-#+RESULTS:
-| latexmk -pdflatex=xelatex -pdf -quiet %f |
-
-   
 #+BEGIN_SRC emacs-lisp
   ;; For export to latex I use the following setting to get fontified listings from source blocks:
   (setq org-latex-listings t)
