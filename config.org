@@ -594,9 +594,6 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
 #+END_SRC
 
-#+RESULTS:
-: /media/rdisk/new_tree/SelfImprover/OrgModeRepo/NixOrg/flagged.org
-
 ** Org Agenda Configuration
    
 #+BEGIN_SRC emacs-lisp
@@ -1012,9 +1009,6 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+END_SRC
 
-#+RESULTS:
-: t
-
 * Yaml Mode
 
 Install and enable yaml mode
@@ -1088,10 +1082,6 @@ Install and enable yaml mode
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+END_SRC
-
-#+RESULTS:
-| dp-report | \documentclass{report} |
-
 
 #+BEGIN_SRC emacs-lisp
   (setq org-latex-hyperref-template "\\hypersetup{
