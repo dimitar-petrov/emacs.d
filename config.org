@@ -995,6 +995,7 @@ I do not want to get distracted by the same code in the other window, so i want 
                               ("HOLD" . ?h)
                               ("PERSONAL" . ?P)
                               ("WORK" . ?W)
+                              ("MANAGER" . ?M)
                               ("FIELD" . ?F)
                               ("ORG" . ?O)
                               ("NORANG" . ?N)
@@ -1010,6 +1011,9 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-agenda-tags-todo-honor-ignore-options t)
 
 #+END_SRC
+
+#+RESULTS:
+: t
 
 * Yaml Mode
 
@@ -1053,12 +1057,28 @@ Install and enable yaml mode
   \\usepackage{fontspec}
   \\usepackage[bulgarian,english]{babel}
   \\usepackage{hyperref}
+  \\usepackage{fancyhdr}
   \\usepackage{listings}
   \\usepackage{titlesec}
   \\usepackage{graphics}
   \\usepackage{fancyhdr}
   \\usepackage{lmodern}
-  \\setmainfont{CMU Serif}
+  \\usepackage{geometry}
+  \\setmainfont{718}
+  \\geometry{
+		a4paper,
+		total={210mm,297mm},
+		left=20mm,
+		right=20mm,
+		top=20mm,
+		bottom=15mm,
+    }
+  \\pagestyle{fancy}
+  \\fancyhf{}
+  \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
+  \\fancyhead[R]{Page \\thepage}
+  \\fancyhead[L]{\\rightmark}
+  \\fancyfoot[C]{\\emph{Proprietary and Confidential}} 
   [NO-DEFAULT-PACKAGES]
   [NO-PACKAGES]
   [EXTRA]"
@@ -1068,6 +1088,10 @@ Install and enable yaml mode
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+END_SRC
+
+#+RESULTS:
+| dp-report | \documentclass{report} |
+
 
 #+BEGIN_SRC emacs-lisp
   (setq org-latex-hyperref-template "\\hypersetup{
