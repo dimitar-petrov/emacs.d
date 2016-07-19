@@ -574,6 +574,9 @@ I do not want to get distracted by the same code in the other window, so i want 
                 ("j" "Journal" entry (file+datetree 
                                       (concat org-directory "/NixOrg/journal.org"))
                  "* %?\nToday *ENERGY* Level: \nToday *PASSION* Level: \nToday *INTENSITY* Level: \nToday *MINDFULLNESS* Level: \n%U\n" :clock-in t :clock-resume t)
+                ("c" "Conditionning" entry (file+datetree 
+                                      (concat org-directory "/NixOrg/journal.org"))
+                 "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
                 ("w" "org-protocol" entry (file
                                            (concat org-directory "/NixOrg/refile.org"))
                  "* TODO Review %c\n%U\n" :immediate-finish t)
