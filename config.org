@@ -102,7 +102,8 @@ Here's some configuration for bbatsov's solarized themes.
 #+BEGIN_SRC emacs-lisp
    (use-package spacemacs-theme
         :ensure t
-        :init)
+        :defer t
+        )
 #+END_SRC
 
 ** Convenient theme functions
@@ -123,6 +124,7 @@ Here's some configuration for bbatsov's solarized themes.
   )
 
   (switch-theme 'solarized-dark)
+;;  (switch-theme 'spacemacs-theme)
 
       (defun disable-active-themes ()
         "Disables any currently active themes listed in `custom-enabled-themes'."
@@ -205,7 +207,9 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
 ;;         (define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
          (evil-leader/set-key "k" 'evil-window-next)
          (evil-leader/set-key "j" 'evil-window-prev)
-         (evil-leader/set-key "f" 'org-agenda-filter-by-tag)))
+         (evil-leader/set-key "f" 'org-agenda-filter-by-tag)
+         (evil-leader/set-key "a" 'org-table-move-row-up)
+         (evil-leader/set-key "s" 'org-table-move-row-down)))
 
 #+END_SRC
 
@@ -343,7 +347,6 @@ Make TAB act as if it were issued in a buffer of the language's major mode
                       org-gnus
                       org-id
                       org-info
-                      org-jsinfo
                       org-inlinetask
                       org-irc
                       org-mew
@@ -1030,10 +1033,17 @@ Install and enable yaml mode
 
 #+BEGIN_SRC emacs-lisp
   ;; Use xelatex for PDF export
-  (setq texcmd "latexmk -pdflatex=xelatex -pdf -quiet %f")
+  ;;(setq texcmd "latexmk -pdflatex=xelatex -pdf -quiet %f")
 
   ;; LaTeX compilation command
-  (setq org-latex-pdf-process (list texcmd))
+  ;;(setq org-latex-pdf-process (list texcmd))
+
+  ;; Another solution
+  (setq org-export-dispatch-use-expert-ui t ; non-intrusive export dispatch
+          org-latex-pdf-process               ; for regular export
+          '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1057,6 +1067,7 @@ Install and enable yaml mode
   \\usepackage{fancyhdr}
   \\usepackage{lmodern}
   \\usepackage{geometry}
+  \\usepackage{longtable}
   \\setmainfont{CMU Serif}
   \\geometry{
 		a4paper,
