@@ -491,7 +491,7 @@ You can start a pomodoro for the task at point or select one from the last tasks
             (when dp/keep-clock-running
               (dp/clock-in-default-task)))))))
 
-  (defvar dp/organization-task-id "eb155a82-92b2-4f25-a3c6-0304591af2f9")
+  (defvar dp/organization-task-id "efe0217b-425f-4de2-a1a7-293d3dd68cd7")
 
   (defun dp/clock-in-organization-task-as-default ()
     (interactive)
@@ -534,6 +534,12 @@ You can start a pomodoro for the task at point or select one from the last tasks
       (org-with-point-at clock-in-to-task
         (org-clock-in nil))))
 
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; Agenda clock report parameters
+  (setq org-agenda-clockreport-parameter-plist
+         (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80)))
 #+END_SRC
 
 ** Editing source code
@@ -957,6 +963,77 @@ I do not want to get distracted by the same code in the other window, so i want 
                  nil))))
 
 #+END_SRC
+
+** Review agenda views
+
+#+BEGIN_SRC emacs-lisp
+  ;; define "R" as the prefix key for reviewing what happened in various
+  ;; time periods
+  (add-to-list 'org-agenda-custom-commands
+               '("R" . "Review" )
+               )
+
+  ;; Common settings for all reviews
+  (setq dp/org-agenda-review-settings
+        '(
+  ;;        (org-agenda-files '("~/org/notes.org"
+  ;;                            "~/org/projects.org"
+  ;;                            ))
+          (org-agenda-show-all-dates t)
+          (org-agenda-start-with-log-mode t)
+          (org-agenda-start-with-clockreport-mode t)
+          (org-agenda-archives-mode t)
+          ;; I don't care if an entry was archived
+          (org-agenda-hide-tags-regexp
+           (concat org-agenda-hide-tags-regexp
+                   "\\|ARCHIVE"))
+        ))
+  ;; Show the agenda with the log turn on, the clock table show and
+  ;; archived entries shown.  These commands are all the same exept for
+  ;; the time period.
+  (add-to-list 'org-agenda-custom-commands
+               `("Rw" "Week in review"
+                  agenda ""
+                  ;; agenda settings
+                  ,(append
+                    dp/org-agenda-review-settings
+                    '((org-agenda-span 'week)
+                      (org-agenda-start-on-weekday 0)
+                      (org-agenda-overriding-header "Week in Review"))
+                    )
+                  (concat org-directory "/review/week.html")
+                  ))
+
+
+  (add-to-list 'org-agenda-custom-commands
+               `("Rd" "Day in review"
+                  agenda ""
+                  ;; agenda settings
+                  ,(append
+                    dp/org-agenda-review-settings
+                    '((org-agenda-span 'day)
+                      (org-agenda-overriding-header "Week in Review"))
+                    )
+                  (concat org-directory "/review/day.html")
+                  ))
+
+  (add-to-list 'org-agenda-custom-commands
+               `("Rm" "Month in review"
+                  agenda ""
+                  ;; agenda settings
+                  ,(append
+                    dp/org-agenda-review-settings
+                    '((org-agenda-span 'month)
+                      (org-agenda-start-day "01")
+                      (org-read-date-prefer-future nil)
+                      (org-agenda-overriding-header "Month in Review"))
+                    )
+                  (concat org-directory "/review/month.html")
+                  ))
+#+END_SRC
+
+#+RESULTS:
+: ((Rm Month in review agenda  ((org-agenda-show-all-dates t) (org-agenda-start-with-log-mode t) (org-agenda-start-with-clockreport-mode t) (org-agenda-archives-mode t) (org-agenda-hide-tags-regexp (concat org-agenda-hide-tags-regexp \|ARCHIVE)) (org-agenda-span (quote month)) (org-agenda-start-day 01) (org-read-date-prefer-future nil) (org-agenda-overriding-header Month in Review)) (concat org-directory /review/month.html)) (Rd Day in review agenda  ((org-agenda-show-all-dates t) (org-agenda-start-with-log-mode t) (org-agenda-start-with-clockreport-mode t) (org-agenda-archives-mode t) (org-agenda-hide-tags-regexp (concat org-agenda-hide-tags-regexp \|ARCHIVE)) (org-agenda-span (quote day)) (org-agenda-overriding-header Week in Review)) (concat org-directory /review/day.html)) (Rw Week in review agenda  ((org-agenda-show-all-dates t) (org-agenda-start-with-log-mode t) (org-agenda-start-with-clockreport-mode t) (org-agenda-archives-mode t) (org-agenda-hide-tags-regexp (concat org-agenda-hide-tags-regexp \|ARCHIVE)) (org-agenda-span (quote week)) (org-agenda-start-on-weekday 0) (org-agenda-overriding-header Week in Review)) (concat org-directory /review/week.html)) (R . Review) (N Notes tags NOTE ((org-agenda-overriding-header Notes) (org-tags-match-list-sublevels t))) (h Habits tags-todo STYLE="habit" ((org-agenda-overriding-header Habits) (org-agenda-sorting-strategy (quote (todo-state-down effort-up category-keep))))) (  Agenda ((agenda  nil) (tags REFILE ((org-agenda-overriding-header Tasks to Refile) (org-tags-match-list-sublevels nil))) (tags-todo -CANCELLED/! ((org-agenda-overriding-header Stuck Projects) (org-agenda-skip-function (quote dp/skip-non-stuck-projects)) (org-agenda-sorting-strategy (quote (category-keep))))) (tags-todo -HOLD-CANCELLED/! ((org-agenda-overriding-header Projects) (org-agenda-skip-function (quote dp/skip-non-projects)) (org-tags-match-list-sublevels (quote indented)) (org-agenda-sorting-strategy (quote (category-keep))))) (tags-todo -CANCELLED/!NEXT ((org-agenda-overriding-header (concat Project Next Tasks (if dp/hide-scheduled-and-waiting-next-tasks   (including WAITING and SCHEDULED tasks)))) (org-agenda-skip-function (quote dp/skip-projects-and-habits-and-single-tasks)) (org-tags-match-list-sublevels t) (org-agenda-todo-ignore-scheduled dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-deadlines dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-with-date dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-sorting-strategy (quote (todo-state-down effort-up category-keep))))) (tags-todo -REFILE-CANCELLED-WAITING-HOLD/! ((org-agenda-overriding-header (concat Project Subtasks (if dp/hide-scheduled-and-waiting-next-tasks   (including WAITING and SCHEDULED tasks)))) (org-agenda-skip-function (quote dp/skip-non-project-tasks)) (org-agenda-todo-ignore-scheduled dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-deadlines dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-with-date dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-sorting-strategy (quote (category-keep))))) (tags-todo -REFILE-CANCELLED-WAITING-HOLD/! ((org-agenda-overriding-header (concat Standalone Tasks (if dp/hide-scheduled-and-waiting-next-tasks   (including WAITING and SCHEDULED tasks)))) (org-agenda-skip-function (quote dp/skip-project-tasks)) (org-agenda-todo-ignore-scheduled dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-deadlines dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-with-date dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-sorting-strategy (quote (category-keep))))) (tags-todo -CANCELLED+WAITING|HOLD/! ((org-agenda-overriding-header (concat Waiting and Postponed Tasks (if dp/hide-scheduled-and-waiting-next-tasks   (including WAITING and SCHEDULED tasks)))) (org-agenda-skip-function (quote dp/skip-non-tasks)) (org-tags-match-list-sublevels nil) (org-agenda-todo-ignore-scheduled dp/hide-scheduled-and-waiting-next-tasks) (org-agenda-todo-ignore-deadlines dp/hide-scheduled-and-waiting-next-tasks))) (tags -REFILE/ ((org-agenda-overriding-header Tasks to Archive) (org-agenda-skip-function (quote dp/skip-non-archivable-tasks)) (org-tags-match-list-sublevels nil)))) nil))
 
 ** Configure org-refile
 
