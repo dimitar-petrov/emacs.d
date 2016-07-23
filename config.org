@@ -303,6 +303,9 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
     :mode (("\\.org$" . org-mode))
     :ensure org-plus-contrib
     )
+
+  ;; org-mode is the default mode for .org, .org_archive, and .txt files.
+  (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 #+END_SRC
 
 ** Display Preferences
@@ -327,12 +330,6 @@ Also change the usual ellipsis(...) with a little downward-pointing that org dis
 Use syntax highlighting in source blocks while editing.
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
-#+END_SRC
-
-Make TAB act as if it were issued in a buffer of the language's major mode
-
-#+BEGIN_SRC emacs-lisp
-
 #+END_SRC
 
 ** Org Modules
@@ -542,6 +539,21 @@ You can start a pomodoro for the task at point or select one from the last tasks
          (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80)))
 #+END_SRC
 
+The following setup is removing the empty LOGBOOK drawers if they occur
+
+#+BEGIN_SRC emacs-lisp
+  ;; Remove empty LOGBOOK drawers on clock out
+  (defun bh/remove-empty-drawer-on-clock-out ()
+    (interactive)
+    (save-excursion
+      (beginning-of-line 0)
+      (org-remove-empty-drawer-at "LOGBOOK" (point))))
+
+  (add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+
+#+END_SRC
+
+
 ** Editing source code
 I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
 
@@ -557,17 +569,6 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
 
   (setq org-default-notes-file (concat org-directory "/notes.org"))
-
-  ;;(setq org-capture-templates
-  ;;      '(("t" "Todo" entry (file+headline
-  ;;                           (concat org-directory "/NixOrg/gtd.org") "Tasks")
-  ;;         "* TODO %?\n  %i\n  %a\n")
-  ;;        ("n" "Note" entry (file+headline
-  ;;                           (concat org-directory "/NixOrg/notes.org") "Notes")
-  ;;         "* %?\nEntered on %U\n  %i\n  %a")
-  ;;        ("j" "Journal" entry (file+datetree
-  ;;                              (concat org-directory "/NixOrg/journal.org"))
-  ;;         "* %?\nEntered on %U\n  %i\n  %a")))
 
   ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
   (setq org-capture-templates
@@ -610,13 +611,9 @@ I do not want to get distracted by the same code in the other window, so i want 
    
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files
-        (list (concat org-directory "/NixOrg")))
-
-  ;;            (concat org-directory "/NixOrg/gtd.org")
-  ;;            (concat org-directory "/NixOrg/refile.org")
-  ;;            (concat org-directory "/NixOrg/notes.org")))
-  ;;            (concat org-directory "/NixOrg/business.org")
-  ;;            (concat org-directory "/NixOrg/personal.org")))
+        (list (concat org-directory "/NixOrg")
+              (concat org-directory "/NixOrg/roles")
+              (concat org-directory "/NixOrg/amdocs")))
 
   (setq org-agenda-span 'day)
 #+END_SRC
