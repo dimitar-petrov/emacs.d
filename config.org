@@ -209,7 +209,8 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
          (evil-leader/set-key "j" 'evil-window-prev)
          (evil-leader/set-key "f" 'org-agenda-filter-by-tag)
          (evil-leader/set-key "a" 'org-table-move-row-up)
-         (evil-leader/set-key "s" 'org-table-move-row-down)))
+         (evil-leader/set-key "s" 'org-table-move-row-down)
+         (evil-leader/set-key "B" 'org-agenda-bulk-action)))
 
 #+END_SRC
 
@@ -370,6 +371,13 @@ Use syntax highlighting in source blocks while editing.
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-cb" 'org-iswitchb)
+#+END_SRC
+
+** Checklist handling (norang)
+There's a contributed org-checklist that can unckeck the boxes automatically when task is marked done
+
+#+BEGIN_SRC emacs-lisp
+  (require 'org-checklist)
 #+END_SRC
 
 ** Add Org-Pomodoro
@@ -553,7 +561,6 @@ The following setup is removing the empty LOGBOOK drawers if they occur
 
 #+END_SRC
 
-
 ** Editing source code
 I do not want to get distracted by the same code in the other window, so i want org src to use the current window.
 
@@ -572,14 +579,14 @@ I do not want to get distracted by the same code in the other window, so i want 
 
   ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
   (setq org-capture-templates
-        (quote (("t" "Todo" entry (file+headline
-                                   (concat org-directory "/NixOrg/refile.org") "Tasks")
+        (quote (("t" "Todo" entry (file
+                                   (concat org-directory "/NixOrg/refile.org"))
                  "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("r" "Respond" entry (file
                                       (concat org-directory "/NixOrg/refile.org"))
                  "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                ("n" "Note" entry (file+headline 
-                                   (concat org-directory "/NixOrg/refile.org") "Notes")
+                ("n" "Note" entry (file
+                                   (concat org-directory "/NixOrg/refile.org"))
                  "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("j" "Journal" entry (file+datetree 
                                       (concat org-directory "/NixOrg/journal.org"))
@@ -596,8 +603,8 @@ I do not want to get distracted by the same code in the other window, so i want 
                 ("p" "Phone call" entry (file
                                          (concat org-directory "/NixOrg/refile.org"))
                  "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                ("h" "Habit" entry (file+headline
-                                    (concat org-directory "/NixOrg/refile.org") "Habits")
+                ("h" "Habit" entry (file
+                                    (concat org-directory "/NixOrg/refile.org"))
                  "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
   ;; Set up org-mobile-directory
@@ -616,6 +623,36 @@ I do not want to get distracted by the same code in the other window, so i want 
               (concat org-directory "/NixOrg/amdocs")))
 
   (setq org-agenda-span 'day)
+#+END_SRC
+
+** Archiving 
+   
+#+BEGIN_SRC emacs-lisp
+  (setq org-archive-mark-done nil)
+  (setq org-archive-location "%s_archive::* Archived Tasks")
+
+  (defun dp/skip-non-archivable-tasks ()
+    "Skip trees that are not available for archiving"
+    (save-restriction
+      (widen)
+      ;; Consider only tasks with done todo headings as archivable candidates
+      (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+            (subtree-end (save-excursion (org-end-of-subtree t))))
+        (if (member (org-get-todo-state) org-todo-keywords-1)
+            (if (member (org-get-todo-state) org-done-keywords)
+                (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+                       (a-month-ago (* 60 60 24 (+ daynr 1)))
+                       (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
+                       (this-month (format-time-string "%Y-%m-" (current-time)))
+                       (subtree-is-current (save-excursion
+                                             (forward-line 1)
+                                             (and (< (point) subtree-end)
+                                                  (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
+                  (if subtree-is-current
+                      subtree-end ; Has a date in this month or last month, skip it
+                    nil))  ; available to archive
+              (or subtree-end (point-max)))
+          next-headline))))
 #+END_SRC
 
 ** Project Helper Functions (norang)
@@ -959,6 +996,31 @@ I do not want to get distracted by the same code in the other window, so i want 
                          (org-tags-match-list-sublevels nil))))
                  nil))))
 
+#+END_SRC
+
+** Keep tasks with timestamps visible on the global todo lists (norang)
+
+#+BEGIN_SRC emacs-lisp
+  ;; Keep tasks with dates on the global todo lists
+  (setq org-agenda-todo-ignore-with-date nil)
+
+  ;; Keep tasks with deadlines on the global todo lists
+  (setq org-agenda-todo-ignore-deadlines nil)
+
+  ;; Keep tasks with scheduled dates on the global todo lists
+  (setq org-agenda-todo-ignore-scheduled nil)
+
+  ;; Keep tasks with timestamps on the global todo lists
+  (setq org-agenda-todo-ignore-timestamp nil)
+
+  ;; Remove completed deadline tasks from the agenda view
+  (setq org-agenda-skip-deadline-if-done t)
+
+  ;; Remove completed scheduled tasks from the agenda view
+  (setq org-agenda-skip-scheduled-if-done t)
+
+  ;; Remove completed items from search results
+  (setq org-agenda-skip-timestamp-if-done t) 
 #+END_SRC
 
 ** Review agenda views
