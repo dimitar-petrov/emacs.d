@@ -371,6 +371,7 @@ Use syntax highlighting in source blocks while editing.
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-cb" 'org-iswitchb)
+  (global-set-key (kbd "<f11>") 'org-clock-goto)
 #+END_SRC
 
 ** Checklist handling (norang)
@@ -551,14 +552,32 @@ The following setup is removing the empty LOGBOOK drawers if they occur
 
 #+BEGIN_SRC emacs-lisp
   ;; Remove empty LOGBOOK drawers on clock out
-  (defun bh/remove-empty-drawer-on-clock-out ()
+  (defun dp/remove-empty-drawer-on-clock-out ()
     (interactive)
     (save-excursion
       (beginning-of-line 0)
       (org-remove-empty-drawer-at "LOGBOOK" (point))))
 
-  (add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+  (add-hook 'org-clock-out-hook 'dp/remove-empty-drawer-on-clock-out 'append)
 
+#+END_SRC
+
+** Next is for tasks
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/mark-next-parent-tasks-todo ()
+    "Visit each parent task and change NEXT states to TODO"
+    (let ((mystate (or (and (fboundp 'org-state)
+                            state)
+                       (nth 2 (org-heading-components)))))
+      (when mystate
+        (save-excursion
+          (while (org-up-heading-safe)
+            (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+              (org-todo "TODO")))))))
+
+  (add-hook 'org-after-todo-state-change-hook 'dp/mark-next-parent-tasks-todo 'append)
+  (add-hook 'org-clock-in-hook 'dp/mark-next-parent-tasks-todo 'append)
 #+END_SRC
 
 ** Editing source code
@@ -998,6 +1017,11 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  ; Overwrite the current window with the agenda
+  (setq org-agenda-window-setup 'current-window)
+#+END_SRC
+
 ** Keep tasks with timestamps visible on the global todo lists (norang)
 
 #+BEGIN_SRC emacs-lisp
@@ -1021,6 +1045,25 @@ I do not want to get distracted by the same code in the other window, so i want 
 
   ;; Remove completed items from search results
   (setq org-agenda-skip-timestamp-if-done t) 
+#+END_SRC
+
+** Meeting Notes
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/prepare-meeting-notes ()
+    "Prepare meeting notes for email
+     Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
+    (interactive)
+    (let (prefix)
+      (save-excursion
+        (save-restriction
+          (narrow-to-region (region-beginning) (region-end))
+          (untabify (point-min) (point-max))
+          (goto-char (point-min))
+          (while (re-search-forward "^\\( *-\\\) \\(TODO\\|DONE\\): " (point-max) t)
+            (replace-match (concat (make-string (length (match-string 1)) ?>) " " (match-string 2) ": ")))
+          (goto-char (point-min))
+          (kill-ring-save (point-min) (point-max))))))
 #+END_SRC
 
 ** Review agenda views
@@ -1143,6 +1186,7 @@ I do not want to get distracted by the same code in the other window, so i want 
                               ("ALEXEY" . ?A)
                               ("IVAN" . ?I)
                               ("DEPLOYMENT" . ?D)
+                              ("BELIEF" . ?B)
                               ("FLAGGED" . ??))))
 
   ; Allow setting single tags without the menu
