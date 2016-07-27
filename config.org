@@ -367,11 +367,13 @@ Use syntax highlighting in source blocks while editing.
 ** Keybindings
    
 #+BEGIN_SRC emacs-lisp
-  (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-cb" 'org-iswitchb)
-  (global-set-key (kbd "<f11>") 'org-clock-goto)
+    (global-set-key "\C-cl" 'org-store-link)
+  ;;  (global-set-key "\C-ca" 'org-agenda)
+    (global-set-key "\C-cc" 'org-capture)
+    (global-set-key "\C-cb" 'org-iswitchb)
+    (global-set-key (kbd "<f12>") 'org-agenda)
+    (global-set-key (kbd "<f11>") 'org-clock-goto)
+    (global-set-key (kbd "<f9>") 'org-search-view)
 #+END_SRC
 
 ** Checklist handling (norang)
@@ -556,7 +558,7 @@ The following setup is removing the empty LOGBOOK drawers if they occur
     (interactive)
     (save-excursion
       (beginning-of-line 0)
-      (org-remove-empty-drawer-at "LOGBOOK" (point))))
+      (org-remove-empty-drawer-at (point))))
 
   (add-hook 'org-clock-out-hook 'dp/remove-empty-drawer-on-clock-out 'append)
 
