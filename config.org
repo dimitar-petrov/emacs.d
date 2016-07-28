@@ -383,13 +383,13 @@ There's a contributed org-checklist that can unckeck the boxes automatically whe
   (require 'org-checklist)
 #+END_SRC
 
-** Add Org-Pomodoro
+** COMMENT Add Org-Pomodoro 
 
-You can start a pomodoro for the task at point or select one from the last tasks that you clocked time for. Each clocked-in pomodoro starts a timer of 25 minutes and after each pomodoro break timer of 5 minutes is started automatically. Every 4 breaks long break is started with 20 minutes. All values are customizable.
-#+BEGIN_SRC emacs-lisp
-  (use-package org-pomodoro
-    :ensure t)
-#+END_SRC
+;;You can start a pomodoro for the task at point or select one from the last tasks that you clocked time for. Each clocked-in pomodoro starts a timer of 25 minutes and after each pomodoro break timer of 5 minutes is started ;;automatically. Every 4 breaks long break is started with 20 minutes. All values are customizable.
+;;#+BEGIN_SRC emacs-lisp
+;;  (use-package org-pomodoro
+;;    :ensure t)
+;;#+END_SRC
 
 ** Clocking (norang)
    
