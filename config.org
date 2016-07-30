@@ -290,7 +290,6 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
   (evil-leader/set-key "h" 'evil-prev-buffer)
 #+END_SRC
 
-
 ** Org-agenda Vim Keybindings                                  :orgmode:evil:
 
  #+BEGIN_SRC emacs-lisp
@@ -319,9 +318,11 @@ In oder to define and use a <leader> prefix for your personal shortcuts you have
          "t" 'org-agenda-todo
          ":" 'org-agenda-set-tags
          ";" 'org-timer-set-timer
-         "I" 'helm-org-task-file-headings
-         "i" 'org-agenda-clock-in-avy
-         "O" 'org-agenda-clock-out-avy
+         "i" 'org-agenda-clock-in
+         "O" 'org-agenda-clock-out
+;;         "I" 'helm-org-task-file-headings
+;;         "i" 'org-agenda-clock-in-avy
+;;         "O" 'org-agenda-clock-out-avy
          "u" 'org-agenda-bulk-unmark
          "x" 'org-agenda-exit
          "j"  'org-agenda-next-line
@@ -1427,6 +1428,12 @@ Disable Indent-Tabs-mode
 #+BEGIN_SRC emacs-lisp
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
+#+END_SRC
+
+Set default input method to bulgarian-phonetic
+
+#+BEGIN_SRC emacs-lisp
+  (setq default-input-method "bulgarian-phonetic")
 #+END_SRC
 
 ** Backups
