@@ -437,13 +437,14 @@ Use syntax highlighting in source blocks while editing.
 ** Keybindings
    
 #+BEGIN_SRC emacs-lisp
-    (global-set-key "\C-cl" 'org-store-link)
-  ;;  (global-set-key "\C-ca" 'org-agenda)
-    (global-set-key "\C-cc" 'org-capture)
-    (global-set-key "\C-cb" 'org-iswitchb)
-    (global-set-key (kbd "<f12>") 'org-agenda)
-    (global-set-key (kbd "<f11>") 'org-clock-goto)
-    (global-set-key (kbd "<f9>") 'org-search-view)
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-cb" 'org-iswitchb)
+  (global-set-key (kbd "<f12>") 'org-agenda)
+  (global-set-key (kbd "<f11>") 'org-clock-goto)
+  (global-set-key (kbd "<f9>") 'org-search-view)
+  (global-set-key (kbd "<f8>") 'dp/switch-dictionary)
+    
 #+END_SRC
 
 ** Checklist handling (norang)
@@ -1266,6 +1267,26 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+END_SRC
 
+** org-indent-mode
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-startup-indented t)
+#+END_SRC
+
+** google-translate
+This package allows to translate the strings using Google Translate service directly from GNU Emacs
+
+#+BEGIN_SRC emacs-lisp
+  (use-package google-translate
+    :ensure t)
+  (require 'google-translate)
+  (require 'google-translate-smooth-ui)
+  (global-set-key "\C-ct" 'google-translate-smooth-translate)
+
+  (setq google-translate-translation-directions-alist
+        '(("en" . "bg") ("bg" . "en")))
+#+END_SRC
+
 * Yaml Mode
 
 Install and enable yaml mode
@@ -1305,6 +1326,7 @@ Install and enable yaml mode
 ** Report Export Class
 
 #+BEGIN_SRC emacs-lisp
+  (setq org-export-with-sub-superscripts nil)
   (add-to-list 'org-latex-classes
             '("dp-report"
                "\\documentclass{report}
@@ -1319,14 +1341,15 @@ Install and enable yaml mode
   \\usepackage{lmodern}
   \\usepackage{geometry}
   \\usepackage{longtable}
+  \\usepackage{underscore}
   \\setmainfont{CMU Serif}
   \\geometry{
-		a4paper,
-		total={210mm,297mm},
-		left=20mm,
-		right=20mm,
-		top=20mm,
-		bottom=15mm,
+    a4paper,
+    total={210mm,297mm},
+    left=20mm,
+    right=20mm,
+    top=20mm,
+    bottom=15mm,
     }
   \\pagestyle{fancy}
   \\fancyhf{}
@@ -1557,6 +1580,53 @@ In order to disable the jumpy scrolling
 #+BEGIN_SRC emacs-lisp
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "firefox")
+#+END_SRC
+
+** Using flyspell mode to reduce spelling errors
+
+flyspell-mode is enabled for almost everything to help prevent creating documents with spelling errors.
+
+#+BEGIN_SRC emacs-lisp
+  ;; flyspell mode for spell checking everywhere
+  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
+
+  ;; Disable keys in org-mode
+  ;;    C-c [ 
+  ;;    C-c ]
+  ;;    C-c ;
+  ;;    C-c C-x C-q  cancelling the clock (we never want this)
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               ;; Undefine C-c [ and C-c ] since this breaks my
+               ;; org-agenda files when directories are include It
+               ;; expands the files in the directories individually
+               (org-defkey org-mode-map "\C-c[" 'undefined)
+               (org-defkey org-mode-map "\C-c]" 'undefined)
+               (org-defkey org-mode-map "\C-c;" 'undefined)
+               (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+            'append)
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c M-o") 'dp/mail-subtree))
+            'append)
+
+  (defun dp/mail-subtree ()
+    (interactive)
+    (org-mark-subtree)
+    (org-mime-subtree))
+
+  (let ((langs '("american" "bulgarian")))
+    (setq lang-ring (make-ring (length langs)))
+    (dolist (elem langs) (ring-insert lang-ring elem)))
+
+  (defun dp/switch-dictionary ()
+    (interactive)
+    (let ((lang (ring-ref lang-ring -1)))
+      (ring-insert lang-ring lang)
+      (ispell-change-dictionary lang)
+      (flyspell-buffer)))
+
 #+END_SRC
 
 * Links
