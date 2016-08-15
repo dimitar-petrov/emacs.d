@@ -9,7 +9,7 @@
         user-mail-address "petrov.dimp@gmail.com")
 #+END_SRC
 
-* Initializa MELPA
+* Initialize MELPA
 
 #+BEGIN_SRC emacs-lisp
     (when (>= emacs-major-version 24)
@@ -47,7 +47,8 @@
 
 ** Cyberpunk theme
 
-The cyberpunk theme is dark and colorful. The code bellow removes the boxes around the modeline
+The cyberpunk theme is dark and colorful. The code bellow removes the boxes around the mode line 
+
 #+BEGIN_SRC emacs-lisp
 (use-package cyberpunk-theme
   :if (window-system)
@@ -137,7 +138,7 @@ Here's some configuration for bbatsov's solarized themes.
 
 * Font
 
-Source Code Pro is a nice monospaced font.
+Source Code Pro is a nice mono-spaced font.
 Here is how we tell Emacs to use the font we want to use.
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist
@@ -146,7 +147,7 @@ Here is how we tell Emacs to use the font we want to use.
 
 * Evil Mode
 ** Leader key
-In oder to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
+In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
 
 #+BEGIN_SRC emacs-lisp
   (use-package evil-leader
@@ -448,7 +449,7 @@ Use syntax highlighting in source blocks while editing.
 #+END_SRC
 
 ** Checklist handling (norang)
-There's a contributed org-checklist that can unckeck the boxes automatically when task is marked done
+There's a contributed org-checklist that can uncheck the boxes automatically when task is marked done
 
 #+BEGIN_SRC emacs-lisp
   (require 'org-checklist)
@@ -1450,7 +1451,7 @@ Disable Indent-Tabs-mode
   (setq-default tab-width 2)
 #+END_SRC
 
-Set default input method to bulgarian-phonetic
+Set default input method to Bulgarian-phonetic
 
 #+BEGIN_SRC emacs-lisp
   (setq default-input-method "bulgarian-phonetic")
@@ -1625,8 +1626,8 @@ flyspell-mode is enabled for almost everything to help prevent creating document
     (let ((lang (ring-ref lang-ring -1)))
       (ring-insert lang-ring lang)
       (ispell-change-dictionary lang)
-      (flyspell-buffer)))
-
+      (flyspell-buffer)
+      (message "Dictionary switched to %s" lang)))
 #+END_SRC
 
 * Links
