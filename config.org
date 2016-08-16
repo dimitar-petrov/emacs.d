@@ -215,6 +215,36 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 
 #+END_SRC
 
+** Toggle Windows Split
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/window-toggle-split-direction ()
+    "Switch window split from horizontally to vertically, or vice versa. 
+  i.e. change right window to bottom, or change bottom window to right."
+    (interactive)
+    (require 'windmove)
+    (let ((done))
+      (dolist (dirs '((right . down) (down . right)))
+        (unless done
+          (let* ((win (selected-window))
+                 (nextdir (car dirs))
+                 (neighbour-dir (cdr dirs))
+                 (next-win (windmove-find-other-window nextdir win))
+                 (neighbour1 (windmove-find-other-window neighbour-dir win))
+                 (neighbour2 (if next-win (with-selected-window next-win
+                                            (windmove-find-other-window neighbour-dir next-win)))))
+            ;;(message "win: %s\nnext-win: %s\nneighbour1: %s\nneighbour2:%s" win next-win neighbour1 neighbour2)
+            (setq done (and (eq neighbour1 neighbour2)
+                            (not (eq (minibuffer-window) next-win))))
+            (if done
+                (let* ((other-buf (window-buffer next-win)))
+                  (delete-window next-win)
+                  (if (eq nextdir 'right)
+                      (split-window-vertically)
+                    (split-window-horizontally))
+                  (set-window-buffer (windmove-find-other-window neighbour-dir) other-buf))))))))
+#+END_SRC
+
 ** #Commented
 #** FIX: Org mode with Evil fails cycle with TAB in terminal emacs 
 #
@@ -445,6 +475,7 @@ Use syntax highlighting in source blocks while editing.
   (global-set-key (kbd "<f11>") 'org-clock-goto)
   (global-set-key (kbd "<f9>") 'org-search-view)
   (global-set-key (kbd "<f8>") 'dp/switch-dictionary)
+  (global-set-key (kbd "C-x |") 'dp/window-toggle-split-direction)
     
 #+END_SRC
 
@@ -700,11 +731,6 @@ I do not want to get distracted by the same code in the other window, so i want 
                                     (concat org-directory "/NixOrg/refile.org"))
                  "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
-  ;; Set up org-mobile-directory
-  (setq org-mobile-directory (concat org-directory "/MobileOrg"))
-
-  ;; Set to the name of the file where new notes will be stored
-  (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
 #+END_SRC
 
 ** Org Agenda Configuration
@@ -716,6 +742,26 @@ I do not want to get distracted by the same code in the other window, so i want 
               (concat org-directory "/NixOrg/amdocs")))
 
   (setq org-agenda-span 'day)
+#+END_SRC
+
+** MobileOrg Configure
+
+#+BEGIN_SRC emacs-lisp
+  ;; Set up org-mobile-directory
+  (setq org-mobile-directory (concat org-directory "/MobileOrg"))
+
+  ;; Set to the name of the file where new notes will be stored
+  (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
+#+END_SRC
+
+*** Install or-mobile-sync
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-mobile-sync
+    :ensure t)
+
+  (org-mobile-sync-mode 1)
+
 #+END_SRC
 
 ** Archiving 
@@ -1628,6 +1674,18 @@ flyspell-mode is enabled for almost everything to help prevent creating document
       (ispell-change-dictionary lang)
       (flyspell-buffer)
       (message "Dictionary switched to %s" lang)))
+#+END_SRC
+
+** Install Jammer
+
+#+BEGIN_SRC emacs-lisp
+  (use-package jammer
+    :ensure t
+    :init)
+  
+  (setq jammer-repeat-delay '1)
+  (setq jammer-repeat-type 'quadratic)
+  (setq jammer-repeat-window '0.75)
 #+END_SRC
 
 * Links
