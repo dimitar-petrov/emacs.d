@@ -739,6 +739,7 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-agenda-files
         (list (concat org-directory "/NixOrg")
               (concat org-directory "/NixOrg/roles")
+              (concat org-directory "/NixOrg/luxoft")
               (concat org-directory "/NixOrg/amdocs")))
 
   (setq org-agenda-span 'day)
@@ -1857,6 +1858,7 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** [[http://pages.sachachua.com/.emacs.d/Sacha.html][Sacha Chua's Emacs Configuration]]
 ** [[https://spwhitton.name/blog/entry/eviltricks/][Evil Tricks]]
 ** [[https://github.com/aaronbieber/dotfiles/tree/master/configs/emacs.d/evil-rebellion][Aron Bieber Evil Rebellion]]
+** [[http://thomasf.github.io/solarized-css/test/org-hacks.html][Org-Hacks]]
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
