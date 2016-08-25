@@ -1504,6 +1504,8 @@ This setting prevents tasks from changing to DONE if any subtasks are still open
 
 You can override the setting temporarily by changing the task with C-u C-u C-u C-c C-t but I never remember that. I set a permanent property on the repeated tasks as follows: 
 
+NOBLOCKING t
+
 * Yaml Mode
 
 Install and enable yaml mode
