@@ -124,7 +124,7 @@ Here's some configuration for bbatsov's solarized themes.
         (my-tone-down-fringes)
   )
 
-  (switch-theme 'solarized-dark)
+  (switch-theme 'wheatgrass)
 ;;  (switch-theme 'spacemacs-theme)
 
       (defun disable-active-themes ()
