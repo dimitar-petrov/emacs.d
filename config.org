@@ -1873,6 +1873,7 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** [[https://spwhitton.name/blog/entry/eviltricks/][Evil Tricks]]
 ** [[https://github.com/aaronbieber/dotfiles/tree/master/configs/emacs.d/evil-rebellion][Aron Bieber Evil Rebellion]]
 ** [[http://thomasf.github.io/solarized-css/test/org-hacks.html][Org-Hacks]]
+** [[http://orgmode.org/worg/org-hacks.html][Org-Mode Hacks]]
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
