@@ -208,15 +208,6 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
   (global-evil-surround-mode 1)
 #+END_SRC
 
-** Load evil-org
-
-#+BEGIN_SRC emacs-lisp
-    (use-package evil-org
-      :diminish evil-org-mode
-      :load-path "~/plugins/evil-org-mode")
-    (evil-org-mode t)
-#+END_SRC
-
 ** Use escape to get out of as much stuff as possible
 
 #+BEGIN_SRC emacs-lisp
@@ -1562,6 +1553,15 @@ NOBLOCKING t
 
 #+BEGIN_SRC emacs-lisp
   (require 'epa-file)
+#+END_SRC
+
+** Load evil-org
+
+#+BEGIN_SRC emacs-lisp
+    (use-package evil-org
+      :diminish evil-org-mode
+      :load-path "~/plugins/evil-org-mode")
+    (evil-org-mode t)
 #+END_SRC
 
 * Yaml Mode
