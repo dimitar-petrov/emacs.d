@@ -146,25 +146,58 @@ Here is how we tell Emacs to use the font we want to use.
 #+END_SRC
 
 * Evil Mode
-** Leader key
-In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
-
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-leader
-    :ensure t)
-  (setq evil-leader/in-all-states 1)
-  (global-evil-leader-mode)
-  (evil-leader/set-leader ",")
-#+END_SRC
-
 ** Load evil package and enable evil-mode
+:LOGBOOK:
+:END:
+
+In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
 
  #+BEGIN_SRC emacs-lisp
    (use-package evil
      :ensure t
-     :init)
-   (require 'evil)
-   (evil-mode t)
+     :config
+     (use-package evil-leader
+       :ensure t
+       :config
+       (global-evil-leader-mode 1)
+       (evil-leader/set-leader ",")
+       (setq evil-leader/in-all-states 1)
+       (evil-leader/set-key "b" 'helm-mini
+         "e" 'helm-find-files
+         "K" 'kill-buffer
+         "y" 'helm-show-kill-ring
+         "j" 'avy-goto-word-1
+         "l" 'avy-goto-line
+         "u" 'undo-tree-visualize
+         "s" 'helm-swoop
+         "n" 'company-yasnippet
+         "k" 'evil-window-next
+         "j" 'evil-window-prev
+         "f" 'org-agenda-filter-by-tag
+         "B" 'org-agenda-bulk-action))
+     (evil-mode))
+
+;;   (use-package evil-args
+;;     :ensure t
+;;     :config
+;;     ;; bind evil-args text objects
+;;     (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+;;     (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+;;
+;;     ;; bind evil-forward/backward-args
+;;     (define-key evil-normal-state-map "L" 'evil-forward-arg)
+;;     (define-key evil-normal-state-map "H" 'evil-backward-arg)
+;;     (define-key evil-motion-state-map "L" 'evil-forward-arg)
+;;     (define-key evil-motion-state-map "H" 'evil-backward-arg)
+;;
+;;     ;; bind evil-jump-out-args
+;;     (define-key evil-normal-state-map "K" 'evil-jump-out-args))
+
+   (use-package evil-matchit
+     :ensure t
+     :config
+     (global-evil-matchit-mode 1))
+
  #+END_SRC
 
 ** Load evil-surround
@@ -175,7 +208,16 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
   (global-evil-surround-mode 1)
 #+END_SRC
 
-** Use escape to get out of as much stuff as possible.
+** Load evil-org
+
+#+BEGIN_SRC emacs-lisp
+    (use-package evil-org
+      :diminish evil-org-mode
+      :load-path "~/plugins/evil-org-mode")
+    (evil-org-mode t)
+#+END_SRC
+
+** Use escape to get out of as much stuff as possible
 
 #+BEGIN_SRC emacs-lisp
     (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
@@ -197,21 +239,27 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
   (setq-default evil-cross-lines t)
 #+END_SRC
 
-** Rebinding window navigation in Evil mode in emacs
+** Make escape work the way it does in vim
 
 #+BEGIN_SRC emacs-lisp
-    (eval-after-load "evil"
-      '(progn
-;;         (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-;;         (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-;;         (define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
-;;         (define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
-         (evil-leader/set-key "k" 'evil-window-next)
-         (evil-leader/set-key "j" 'evil-window-prev)
-         (evil-leader/set-key "f" 'org-agenda-filter-by-tag)
-         (evil-leader/set-key "a" 'org-table-move-row-up)
-         (evil-leader/set-key "s" 'org-table-move-row-down)
-         (evil-leader/set-key "B" 'org-agenda-bulk-action)))
+  ;; esc quits
+  (defun minibuffer-keyboard-quit ()
+    "Abort recursive edit.
+  In Delete Selection mode, if the mark is active, just deactivate it;
+  then it takes a second \\[keyboard-quit] to abort the minibuffer."
+    (interactive)
+    (if (and delete-selection-mode transient-mark-mode mark-active)
+        (setq deactivate-mark  t)
+      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+      (abort-recursive-edit)))
+  (define-key evil-normal-state-map [escape] 'keyboard-quit)
+  (define-key evil-visual-state-map [escape] 'keyboard-quit)
+  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+  (global-set-key [escape] 'evil-exit-emacs-state)
 
 #+END_SRC
 
@@ -444,6 +492,7 @@ Use syntax highlighting in source blocks while editing.
                       org-bibtex
                       org-crypt
                       org-gnus
+                      org-mu4e
                       org-id
                       org-info
                       org-inlinetask
@@ -462,6 +511,7 @@ Use syntax highlighting in source blocks while editing.
 
   ; position the habit graph on the agenda to the right of the default
   (setq org-habit-graph-column 50)
+
 
 #+END_SRC
 
@@ -1492,6 +1542,8 @@ This package allows to translate the strings using Google Translate service dire
 
 ** Handling blocked tasks
 
+
+
 Blocked tasks are tasks that have subtasks which are not in a done todo state. Blocked tasks show up in a grayed font by default in the agenda.
 
 To enable task blocking set the following variable:
@@ -1505,6 +1557,12 @@ This setting prevents tasks from changing to DONE if any subtasks are still open
 You can override the setting temporarily by changing the task with C-u C-u C-u C-c C-t but I never remember that. I set a permanent property on the repeated tasks as follows: 
 
 NOBLOCKING t
+
+** Encrypting org files
+
+#+BEGIN_SRC emacs-lisp
+  (require 'epa-file)
+#+END_SRC
 
 * Yaml Mode
 
@@ -1624,6 +1682,7 @@ Install and enable yaml mode
 #+END_SRC
 
 * General configuration
+
 ** Turn off bars
 
 #+BEGIN_SRC emacs-lisp
@@ -1762,6 +1821,23 @@ Also, visual-line-mode is so much better than auto-fill-mode. It does not actual
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 #+END_SRC
 
+** Use Swoop
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+    :ensure t
+    :bind (("C-s" . helm-swoop)
+           ("C-S-s" . helm-multi-swoop-all))
+    :config
+    ;; Hopefully temporary, because my version of helm-swoop requires it
+    ; (setq helm-match-plugin-mode helm-mode)
+    )
+
+  ;; disable pre-input
+  (setq helm-swoop-pre-input-function
+        (lambda () ""))
+#+END_SRC
+
 ** Projectile
 
 Install projectile and helm-projectile
@@ -1864,6 +1940,89 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ;;  (jammer-mode 1)
 #+END_SRC
 
+* Email Configuration
+** Configure mu4e
+
+
+#+BEGIN_SRC emacs-lisp
+  (require 'mu4e-contrib)
+
+  (setq mu4e-maildir (expand-file-name "~/Maildir"))
+
+  (setq mu4e-drafts-folder "/gmail/drafts")
+  (setq mu4e-sent-folder   "/gmail/sent")
+  (setq mu4e-trash-folder  "/gmail/trash")
+
+  ;; don't save message to Sent Messages, GMail/IMAP will take care of this
+  (setq mu4e-sent-messages-behavior 'delete)
+
+  ;; setup some handy shortcuts
+  (setq mu4e-maildir-shortcuts
+        '(("/amdocs/INBOX"             . ?a)
+          ("/gmail/inbox" . ?g)
+          ("/gmail/trash"     . ?t)))
+
+  ;; allow for updating mail using 'U' in the main view:
+  (setq mu4e-get-mail-command "offlineimap")
+
+  ;; something about ourselves
+  ;; I don't use a signature...
+  (setq
+   user-mail-address "petrov.dimp@gmail.com"
+   user-full-name  "Dimitar Petrov"
+   ;; message-signature
+   ;;  (concat
+   ;;    "Foo X. Bar\n"
+   ;;    "http://www.example.com\n")
+  )
+
+  ;; sending mail -- replace USERNAME with your gmail username
+  ;; also, make sure the gnutls command line utils are installed
+  ;; package 'gnutls-bin' in Debian/Ubuntu, 'gnutls' in Archlinux.
+
+  (use-package smtpmail
+    :ensure t)
+
+  (setq message-send-mail-function 'smtpmail-send-it
+        starttls-use-gnutls t
+        smtpmail-starttls-credentials
+        '(("smtp.gmail.com" 587 nil nil))
+        smtpmail-auth-credentials
+        (expand-file-name "~/.authinfo.gpg")
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-debug-info t)
+
+  (use-package evil-mu4e
+    :ensure t)
+
+  (setq org-mu4e-link-query-in-headers-mode nil)
+  (setq shr-color-visible-luminance-min 80)
+
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/render-html-message ()
+    (let ((dom (libxml-parse-html-region (point-min) (point-max))))
+      (erase-buffer)
+      (shr-insert-document dom)
+      (goto-char (point-min))))
+
+  (setq mu4e-html2text-command 'dp/render-html-message)
+
+#+END_SRC
+
+** Configure GNUS
+
+#+BEGIN_SRC emacs-lisp
+  (setq gnus-select-method
+        '(nnmaildir "amdocs"
+                    (directory "~/Maildir/amdocs/")
+                    (directory-files nnheader-directory-files-safe)
+                    (get-new-mail nil)))
+#+END_SRC
+
 * Links
 ** *[[http://doc.norang.ca/][Norang - Organize Your Life in Plain Text]]*
 ** [[orgmode.org/tmp/worg/org-tutorials/org-latex-export.html][Org-Mode Latex Export]]
@@ -1874,6 +2033,9 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** [[https://github.com/aaronbieber/dotfiles/tree/master/configs/emacs.d/evil-rebellion][Aron Bieber Evil Rebellion]]
 ** [[http://thomasf.github.io/solarized-css/test/org-hacks.html][Org-Hacks]]
 ** [[http://orgmode.org/worg/org-hacks.html][Org-Mode Hacks]]
+** [[http://rix.si/blog/2014/08/02/evil-and-emacs-an-uholy-matrimony/][Evil and Emacs]]
+** [[https://github.com/chrismccord/dot_emacs][Emacs for a vim user]]
+** [[http://www.macs.hw.ac.uk/~rs46/posts/2014-01-13-mu4e-email-client.html][Drowning in email, mu4e]]
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
@@ -1885,5 +2047,13 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ;  (setq ido-create-new-buffer 'always) ; don't confirm to create new buffers
 ;  (ido-vertical-mode 1)
 ;  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+#+END_SRC
+
+* Post-steps after cloning the GitHub Repository
+
+** Clone the evil-org-mode to plugins since it is not added to Melpa yet
+
+#+BEGIN_SRC shell
+mkdir -p ~/.emacs.d/plugins; git clone git://github.com/edwtjo/evil-org-mode.git ~/.emacs.d/plugins/evil-org-mode
 #+END_SRC
 
