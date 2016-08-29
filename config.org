@@ -1560,7 +1560,7 @@ NOBLOCKING t
 #+BEGIN_SRC emacs-lisp
     (use-package evil-org
       :diminish evil-org-mode
-      :load-path "~/plugins/evil-org-mode")
+      :load-path "~/.emacs.d/plugins/evil-org-mode")
     (evil-org-mode t)
 #+END_SRC
 
