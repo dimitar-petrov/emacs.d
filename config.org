@@ -1950,6 +1950,16 @@ flyspell-mode is enabled for almost everything to help prevent creating document
   (winner-mode 1)
 #+END_SRC
 
+** Install Multi Term
+
+#+BEGIN_SRC emacs-lisp
+  (use-package multi-term
+    :ensure t)
+
+  (setq multi-term-program "/bin/zsh")
+
+#+END_SRC
+
 * Email Configuration
 ** Configure mu4e
 
