@@ -173,7 +173,9 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
          "n" 'company-yasnippet
          "k" 'evil-window-next
          "j" 'evil-window-prev
-         "f" 'org-agenda-filter-by-tag
+         "f" 'evil-prev-buffer
+         "d" 'evil-next-buffer
+         "g" 'org-agenda-filter-by-tag
          "r" 'org-refile
          "B" 'org-agenda-bulk-action))
      (evil-mode))
@@ -200,6 +202,15 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
      (global-evil-matchit-mode 1))
 
  #+END_SRC
+
+** Load evil-org
+
+#+BEGIN_SRC emacs-lisp
+    (use-package evil-org
+      :diminish evil-org-mode
+      :load-path "~/.emacs.d/plugins/evil-org-mode")
+    (evil-org-mode t)
+#+END_SRC
 
 ** Load evil-surround
 
@@ -352,13 +363,6 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
-#+END_SRC
-
-*** Define Leader shortcuts 
-    
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "l" 'evil-next-buffer)
-  (evil-leader/set-key "h" 'evil-prev-buffer)
 #+END_SRC
 
 ** Org-agenda Vim Keybindings
@@ -1557,15 +1561,6 @@ NOBLOCKING t
 
 #+BEGIN_SRC emacs-lisp
   (require 'epa-file)
-#+END_SRC
-
-** Load evil-org
-
-#+BEGIN_SRC emacs-lisp
-    (use-package evil-org
-      :diminish evil-org-mode
-      :load-path "~/.emacs.d/plugins/evil-org-mode")
-    (evil-org-mode t)
 #+END_SRC
 
 * Yaml Mode
