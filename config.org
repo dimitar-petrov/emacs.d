@@ -804,13 +804,43 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
 #+END_SRC
 
-*** Install or-mobile-sync
+*** COMMENT Install or-mobile-sync
 
 #+BEGIN_SRC emacs-lisp
-  (use-package org-mobile-sync
-    :ensure t)
+  ;; (use-package org-mobile-sync
+  ;;  :ensure t)
 
-  (org-mobile-sync-mode 0)
+  ;; (org-mobile-sync-mode 1)
+#+END_SRC
+
+*** Sync with mobile org when idle
+
+#+BEGIN_SRC emacs-lisp
+
+  (defvar my-org-mobile-sync-timer nil)
+
+  (defvar my-org-mobile-sync-secs (* 60 20))
+
+  (defun my-org-mobile-sync-pull-and-push ()
+    (org-mobile-pull)
+    (org-mobile-push)
+    (when (fboundp 'sauron-add-event)
+      (sauron-add-event 'my 3 "Called org-mobile-pull and org-mobile-push")))
+
+  (defun my-org-mobile-sync-start ()
+    "Start automated `org-mobile-push'"
+    (interactive)
+    (setq my-org-mobile-sync-timer
+          (run-with-idle-timer my-org-mobile-sync-secs t
+                               'my-org-mobile-sync-pull-and-push)))
+
+  (defun my-org-mobile-sync-stop ()
+    "Stop automated `org-mobile-push'"
+    (interactive)
+    (cancel-timer my-org-mobile-sync-timer))
+
+  (my-org-mobile-sync-start)
+
 #+END_SRC
 
 ** Archiving 
