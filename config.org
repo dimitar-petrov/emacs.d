@@ -1615,6 +1615,17 @@ NOBLOCKING t
   (require 'epa-file)
 #+END_SRC
 
+Install pinentry
+
+#+BEGIN_SRC emacs-lisp
+  (use-package pinentry
+    :ensure t)
+
+  (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
+  (pinentry-start)
+ 
+#+END_SRC
+
 * Ledger Mode
 
 #+BEGIN_SRC emacs-lisp
@@ -2058,6 +2069,9 @@ flyspell-mode is enabled for almost everything to help prevent creating document
    ;;    "Foo X. Bar\n"
    ;;    "http://www.example.com\n")
   )
+
+  (add-to-list 'mu4e-view-actions
+               '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
   ;; sending mail -- replace USERNAME with your gmail username
   ;; also, make sure the gnutls command line utils are installed
