@@ -153,6 +153,10 @@ Here is how we tell Emacs to use the font we want to use.
 In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
 
  #+BEGIN_SRC emacs-lisp
+ ;; fix TAB issue in text-mode
+   (setq evil-want-C-i-jump nil)
+
+;; initialize evil
    (use-package evil
      :ensure t
      :config
@@ -451,7 +455,7 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
     )
 
   ;; org-mode is the default mode for .org, .org_archive, and .txt files.
-  (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+  (add-to-list 'auto-mode-alist '("\\.\\(org.gpg\\|org_archive.gpg\\|txt\\)$" . org-mode))
 #+END_SRC
 
 ** Display Preferences
@@ -745,40 +749,54 @@ I do not want to get distracted by the same code in the other window, so i want 
    The following sets a default target file for notes, and defines a global key for capturing new material.
 
 #+BEGIN_SRC emacs-lisp
-  ;; Set to the location of my Org files on the NFS Share
-  (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
+    ;; Set to the location of my Org files on the NFS Share
+    (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
 
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
+    (setq org-default-notes-file (concat org-directory "/notes.org"))
 
-  ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
-  (setq org-capture-templates
-        (quote (("t" "Todo" entry (file
-                                   (concat org-directory "/NixOrg/refile.org"))
-                 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("r" "Respond" entry (file
-                                      (concat org-directory "/NixOrg/refile.org"))
-                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                ("n" "Note" entry (file
-                                   (concat org-directory "/NixOrg/refile.org"))
-                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("j" "Journal" entry (file+datetree 
-                                      (concat org-directory "/NixOrg/journal.org"))
-                 "* %?\n%[jnl.txt]\n%U\n" :clock-in t :clock-resume t)
-                ("c" "Conditionning" entry (file+datetree 
-                                      (concat org-directory "/NixOrg/journal.org"))
-                 "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
-                ("w" "org-protocol" entry (file
-                                           (concat org-directory "/NixOrg/refile.org"))
-                 "* TODO Review %c\n%U\n" :immediate-finish t)
-                ("m" "Meeting" entry (file
-                                      (concat org-directory "/NixOrg/refile.org"))
-                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                ("p" "Phone call" entry (file
-                                         (concat org-directory "/NixOrg/refile.org"))
-                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                ("h" "Habit" entry (file
-                                    (concat org-directory "/NixOrg/refile.org"))
-                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+    ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
+    (setq org-capture-templates
+          (quote (("l" "Ledger entries")
+                   ("lm" "MBNA" plain (file
+                                       (concat org-directory "/NixOrg/ledger.dat.gpg"))
+                    "%(org-read-date) %^{Payee} 
+         Liabilities:MBNA 
+         Expenses:%^{Account}  %^{Amount} 
+      ")
+                      ("lc" "Cash" plain
+                       (file
+                        (concat org-directory "/NixOrg/ledger.dat.gpg"))
+                       "%(org-read-date) * %^{Payee} 
+         Expenses:Cash 
+         Expenses:%^{Account}  %^{Amount} 
+      ")
+                  ("t" "Todo" entry (file
+                                     (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                  ("r" "Respond" entry (file
+                                        (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+                  ("n" "Note" entry (file
+                                     (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                  ("j" "Journal" entry (file+datetree 
+                                        (concat org-directory "/NixOrg/journal.org.gpg"))
+                   "* %?\n%[jnl.txt]\n%U\n" :clock-in t :clock-resume t)
+                  ("c" "Conditionning" entry (file+datetree 
+                                        (concat org-directory "/NixOrg/journal.org.gpg"))
+                   "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
+                  ("w" "org-protocol" entry (file
+                                             (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* TODO Review %c\n%U\n" :immediate-finish t)
+                  ("m" "Meeting" entry (file
+                                        (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                  ("p" "Phone call" entry (file
+                                           (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                  ("h" "Habit" entry (file
+                                      (concat org-directory "/NixOrg/refile.org.gpg"))
+                   "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 #+END_SRC
 
@@ -786,10 +804,14 @@ I do not want to get distracted by the same code in the other window, so i want 
    
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files
-        (list (concat org-directory "/NixOrg")
-              (concat org-directory "/NixOrg/roles")
-              (concat org-directory "/NixOrg/luxoft")
-              (concat org-directory "/NixOrg/amdocs")))
+        (append (file-expand-wildcards
+               (concat org-directory "/NixOrg/*.org.gpg"))
+               (file-expand-wildcards
+                (concat org-directory "/NixOrg/roles/*.org.gpg"))
+                (file-expand-wildcards
+                 (concat org-directory "/NixOrg/luxoft/*.org.gpg"))
+               (file-expand-wildcards
+                (concat org-directory "/NixOrg/amdocs/*.org.gpg"))))
 
   (setq org-agenda-span 'day)
 #+END_SRC
@@ -847,7 +869,7 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+BEGIN_SRC emacs-lisp
   (setq org-archive-mark-done nil)
-  (setq org-archive-location "%s_archive::* Archived Tasks")
+  (setq org-archive-location "%s_archive.gpg::* Archived Tasks")
 
   (defun dp/skip-non-archivable-tasks ()
     "Skip trees that are not available for archiving"
@@ -1593,6 +1615,20 @@ NOBLOCKING t
   (require 'epa-file)
 #+END_SRC
 
+* Ledger Mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ledger-mode
+    :ensure t
+    :init
+    (setq ledger-clear-whole-transactions 1)
+
+    :config
+    (add-to-list 'evil-emacs-state-modes 'ledger-report-mode)
+    :mode "\\.dat\\.gpg\\'")
+
+#+END_SRC
+
 * Yaml Mode
 
 Install and enable yaml mode
@@ -1994,9 +2030,9 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
   (setq mu4e-maildir (expand-file-name "~/Maildir"))
 
-  (setq mu4e-drafts-folder "/gmail/drafts")
-  (setq mu4e-sent-folder   "/gmail/sent")
-  (setq mu4e-trash-folder  "/gmail/trash")
+  (setq mu4e-drafts-folder "/gmail/[Gmail].Drafts")
+  (setq mu4e-sent-folder   "/gmail/[Gmail].Sent Mail")
+  (setq mu4e-trash-folder  "/gmail/[Gmail].Trash")
 
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
   (setq mu4e-sent-messages-behavior 'delete)
@@ -2009,6 +2045,8 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
   ;; allow for updating mail using 'U' in the main view:
   (setq mu4e-get-mail-command "offlineimap")
+  (setq mu4e-update-interval 300)
+
 
   ;; something about ourselves
   ;; I don't use a signature...
@@ -2062,8 +2100,8 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
 #+BEGIN_SRC emacs-lisp
   (setq gnus-select-method
-        '(nnmaildir "amdocs"
-                    (directory "~/Maildir/amdocs/")
+        '(nnmaildir "gmail"
+                    (directory "~/Maildir/gmail/")
                     (directory-files nnheader-directory-files-safe)
                     (get-new-mail nil)))
 #+END_SRC
