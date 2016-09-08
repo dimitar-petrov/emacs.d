@@ -1969,6 +1969,13 @@ In order to disable the jumpy scrolling
         browse-url-generic-program "firefox")
 #+END_SRC
 
+
+** COMMENT Set default browser to eww
+
+;;#+BEGIN_SRC emacs-lisp
+;;  (setq browse-url-browser-function 'eww-browse-url)
+;;#+END_SRC
+
 ** Using flyspell mode to reduce spelling errors
 
 flyspell-mode is enabled for almost everything to help prevent creating documents with spelling errors.
