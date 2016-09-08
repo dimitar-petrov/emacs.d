@@ -1526,6 +1526,15 @@ I do not want to get distracted by the same code in the other window, so i want 
                 ("CANCELLED" :foreground "forest green" :weight bold)
                 ("MEETING" :foreground "yellow" :weight bold)
                 ("PHONE" :foreground "yellow" :weight bold))))
+
+  (setq org-todo-state-tags-triggers
+        (quote (("CANCELLED" ("CANCELLED" . t))
+                ("WAITING" ("WAITING" . t))
+                ("HOLD" ("WAITING") ("HOLD" . t))
+                (done ("WAITING") ("HOLD"))
+                ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 #+END_SRC
 
 ** Tags (norang)
@@ -1770,7 +1779,7 @@ Install and enable yaml mode
 
 #+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
-  (toggle-scroll-bar -1)
+  (scroll-bar-mode -1)
   (tool-bar-mode -1)
 #+END_SRC
 
@@ -2059,8 +2068,8 @@ flyspell-mode is enabled for almost everything to help prevent creating document
   ;; setup some handy shortcuts
   (setq mu4e-maildir-shortcuts
         '(("/amdocs/INBOX"             . ?a)
-          ("/gmail/inbox" . ?g)
-          ("/gmail/trash"     . ?t)))
+          ("/gmail/INBOX" . ?g)
+          ("/gmail/Trash"     . ?t)))
 
   ;; allow for updating mail using 'U' in the main view:
   (setq mu4e-get-mail-command "offlineimap")
