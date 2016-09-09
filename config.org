@@ -1826,10 +1826,13 @@ Set default input method to Bulgarian-phonetic
   (setq default-input-method "bulgarian-phonetic")
 #+END_SRC
 
-** Backups
+** Backups and autosave
 This is one of the things people usually want to change right away. Emacs saves backup files in the current directory.
  #+BEGIN_SRC emacs-lisp
-   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+   (setq backup-directory-alist
+         `((".*" . ,"~/.emacs.d/backups")))
+   (setq auto-save-file-name-transforms
+         `((".*" , "~/.emacs.d/backups" t)))
  #+END_SRC
 
 ** HTTP
@@ -1969,7 +1972,6 @@ In order to disable the jumpy scrolling
         browse-url-generic-program "firefox")
 #+END_SRC
 
-
 ** COMMENT Set default browser to eww
 
 ;;#+BEGIN_SRC emacs-lisp
@@ -2053,6 +2055,16 @@ flyspell-mode is enabled for almost everything to help prevent creating document
     :ensure t)
 
   (setq multi-term-program "/bin/zsh")
+
+#+END_SRC
+
+** Enable primary selection and disable clipboard to support clipit
+
+#+BEGIN_SRC emacs-lisp
+  (setq x-select-enable-primary t)
+
+  ;; Not sure if that is also needed
+  ;; (setq x-select-enable-clipboard nil)
 
 #+END_SRC
 
