@@ -797,7 +797,7 @@ I do not want to get distracted by the same code in the other window, so i want 
                    "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
                   ("h" "Habit" entry (file
                                       (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+                   "* NEXT %?\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n%U\n%a\n"))))
 
 #+END_SRC
 
@@ -836,7 +836,7 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;; (org-mobile-sync-mode 1)
 #+END_SRC
 
-*** Sync with mobile org when idle
+*** COMMENT Sync with mobile org when idle
 
 #+BEGIN_SRC emacs-lisp
 
@@ -862,7 +862,7 @@ I do not want to get distracted by the same code in the other window, so i want 
     (interactive)
     (cancel-timer my-org-mobile-sync-timer))
 
-  (my-org-mobile-sync-start)
+  ;; (my-org-mobile-sync-start)
 
 #+END_SRC
 
@@ -1177,17 +1177,6 @@ I do not want to get distracted by the same code in the other window, so i want 
                   (tags "REFILE"
                         ((org-agenda-overriding-header "Tasks to Refile")
                          (org-tags-match-list-sublevels nil)))
-                  (tags-todo "-CANCELLED/!"
-                             ((org-agenda-overriding-header "Stuck Projects")
-                              (org-agenda-skip-function 'dp/skip-non-stuck-projects)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
-                  (tags-todo "-HOLD-CANCELLED/!"
-                             ((org-agenda-overriding-header "Projects")
-                              (org-agenda-skip-function 'dp/skip-non-projects)
-                              (org-tags-match-list-sublevels 'indented)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
                   (tags-todo "-CANCELLED/!NEXT"
                              ((org-agenda-overriding-header (concat "Project Next Tasks"
                                                                     (if dp/hide-scheduled-and-waiting-next-tasks
@@ -1200,6 +1189,17 @@ I do not want to get distracted by the same code in the other window, so i want 
                               (org-agenda-todo-ignore-with-date dp/hide-scheduled-and-waiting-next-tasks)
                               (org-agenda-sorting-strategy
                                '(todo-state-down effort-up category-keep))))
+                  (tags-todo "-CANCELLED/!"
+                             ((org-agenda-overriding-header "Stuck Projects")
+                              (org-agenda-skip-function 'dp/skip-non-stuck-projects)
+                              (org-agenda-sorting-strategy
+                               '(category-keep))))
+                  (tags-todo "-HOLD-CANCELLED/!"
+                             ((org-agenda-overriding-header "Projects")
+                              (org-agenda-skip-function 'dp/skip-non-projects)
+                              (org-tags-match-list-sublevels 'indented)
+                              (org-agenda-sorting-strategy
+                               '(category-keep))))
                   (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
                              ((org-agenda-overriding-header (concat "Project Subtasks"
                                                                     (if dp/hide-scheduled-and-waiting-next-tasks
@@ -1623,6 +1623,9 @@ NOBLOCKING t
 
 #+BEGIN_SRC emacs-lisp
   (require 'epa-file)
+
+  (setq org-crypt-disable-auto-save nil) 
+  (setq epa-file-inhibit-auto-save nil)
 #+END_SRC
 
 Install pinentry
@@ -1633,7 +1636,6 @@ Install pinentry
 
   (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
   (pinentry-start)
- 
 #+END_SRC
 
 ** Spritz reading mode for emacs
@@ -1829,10 +1831,13 @@ Set default input method to Bulgarian-phonetic
 ** Backups and autosave
 This is one of the things people usually want to change right away. Emacs saves backup files in the current directory.
  #+BEGIN_SRC emacs-lisp
+   (defvar autosave-dir
+    (concat "/home/" (user-login-name) "/.emacs.d/backups/"))
+
    (setq backup-directory-alist
-         `((".*" . ,"~/.emacs.d/backups")))
+         `((".*" . ,autosave-dir)))
    (setq auto-save-file-name-transforms
-         `((".*" , "~/.emacs.d/backups" t)))
+         `((".*" ,autosave-dir t)))
  #+END_SRC
 
 ** HTTP
@@ -1946,7 +1951,7 @@ Install projectile and helm-projectile
       (setq projectile-require-project-root nil)
       (setq projectile-keymap-prefix (kbd "C-c p"))
       (setq projectile-completion-system 'default)
-      (setq projectile-enable-caching t)
+      (setq projectile-enable-caching nil)
       (setq projectile-indexing-method 'alien)
       (add-to-list 'projectile-globally-ignored-files "node-modules"))
     :config
