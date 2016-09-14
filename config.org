@@ -12,19 +12,22 @@
 * Initialize MELPA
 
 #+BEGIN_SRC emacs-lisp
-    (when (>= emacs-major-version 24)
-      (setq-default
-       load-prefer-newer t
-       package-enable-at-startup nil)
-      (package-initialize)
-      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-      (unless (package-installed-p 'delight)
-        (package-refresh-contents)
-        (package-install 'delight))
-      (unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package)))
+  (when (>= emacs-major-version 24)
+    (setq-default
+     load-prefer-newer t
+     package-enable-at-startup nil)
+    (package-initialize)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+    (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+    (unless (package-installed-p 'delight)
+      (package-refresh-contents)
+      (package-install 'delight))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package)))
+
+  ;; Add plugins directory to load-path
+  (add-to-list 'load-path "~/.emacs.d/plugins/")
 #+END_SRC
 
 * Define Personal Functions  
@@ -445,6 +448,12 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 
  #+END_SRC
 
+** Disable evil-mode when in term-mode 
+
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
+#+END_SRC
+
 * Org Mode 
 ** Install latest org-mode
 
@@ -527,9 +536,11 @@ Use syntax highlighting in source blocks while editing.
   (global-set-key (kbd "<f9>") 'org-search-view)
   (global-set-key (kbd "<f8>") 'dp/switch-dictionary)
   (global-set-key (kbd "C-x |") 'dp/window-toggle-split-direction)
-  (global-set-key (kbd "<f5>") 'winner-undo)
-  (global-set-key (kbd "<f6>") 'winner-redo)
-  (global-set-key (kbd "<f4>") 'spray-mode)
+  (global-set-key (kbd "<f6>") 'winner-undo)
+  (global-set-key (kbd "<f7>") 'winner-redo)
+  (global-set-key (kbd "<f5>") 'spray-mode)
+  (global-set-key (kbd "<f3>") 'window-configuration-to-register)
+  (global-set-key (kbd "<f4>") 'jump-to-register)
     
 #+END_SRC
 
@@ -1765,6 +1776,19 @@ Install and enable yaml mode
            (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))))
 #+END_SRC
 
+* Python Mode
+
+#+BEGIN_SRC emacs-lisp
+  ; Use jedi for auto-completion
+  (use-package jedi
+    :ensure t)
+
+  (add-hook 'python-mode-hook 'jedi:setup)
+  ;(setq jedi:complete-on-dot t)                 ; optional
+#+END_SRC
+
+- [[http://tkf.github.io/emacs-jedi/latest/][Jedi Doc]]
+
 * Use smex to handle M-x with ido
 
 #+BEGIN_SRC emacs-lisp
@@ -2073,6 +2097,29 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
 #+END_SRC
 
+** Dired Configuration
+
+#+BEGIN_SRC emacs-lisp
+  ;; Auto-refresh dired on file change
+  (add-hook 'dired-mode-hook 'auto-revert-mode)
+#+END_SRC
+
+** Desktop Configuration
+
+#+BEGIN_SRC emacs-lisp
+  (require 'windows)
+  (require 'recentf)
+
+  ;; -- Load the saved windows automatically on boot
+  (add-hook 'window-setup-hook 'resume-windows)
+
+  ;; -- Save place in file
+  (setq-default save-place t)
+
+  ;; --  Use this command to quit and save your setup
+  (define-key ctl-x-map "C" 'see-you-again)
+#+END_SRC
+
 * Email Configuration
 ** Configure mu4e
 
@@ -2187,11 +2234,23 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ;  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+END_SRC
 
+* Final Configuration
+
+#+BEGIN_SRC emacs-lisp
+  ;; -- Set up window saving!! Place at end of .emacs file
+  (win:startup-with-window)
+#+END_SRC
+
 * Post-steps after cloning the GitHub Repository
 
 ** Clone the evil-org-mode to plugins since it is not added to Melpa yet
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC sh
 mkdir -p ~/.emacs.d/plugins; git clone git://github.com/edwtjo/evil-org-mode.git ~/.emacs.d/plugins/evil-org-mode
 #+END_SRC
 
+** Get windows.el
+
+#+BEGIN_SRC sh 
+mkdir -p ~/.emacs.d/plugins; wget 'http://www.gentei.org/~yuuji/software/windows.el' -O ~/.emacs.d/plugins/windows.el
+#+END_SRC
