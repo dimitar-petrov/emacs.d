@@ -19,6 +19,7 @@
     (package-initialize)
     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
     (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+    (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/") t)
     (unless (package-installed-p 'delight)
       (package-refresh-contents)
       (package-install 'delight))
@@ -452,6 +453,7 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 
 #+BEGIN_SRC emacs-lisp
   (eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
+  (eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
 #+END_SRC
 
 * Org Mode 
@@ -1779,15 +1781,67 @@ Install and enable yaml mode
 * Python Mode
 
 #+BEGIN_SRC emacs-lisp
-  ; Use jedi for auto-completion
-  (use-package jedi
-    :ensure t)
+  ; Install python-environment
 
-  (add-hook 'python-mode-hook 'jedi:setup)
+  ;(use-package python-environment
+  ;  :ensure t)
+
+  ; Use jedi for auto-completion
+  ;(use-package elpy
+  ;  :ensure t)
+
+  ;(add-hook 'python-mode-hook 'jedi:setup)
   ;(setq jedi:complete-on-dot t)                 ; optional
 #+END_SRC
 
 - [[http://tkf.github.io/emacs-jedi/latest/][Jedi Doc]]
+
+- Elpy Install
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t)
+
+  (elpy-enable)
+  (elpy-use-ipython)
+  (setq elpy-rpc-backend "jedi")
+  (setq python-shell-interpreter "/usr/bin/ipython"
+    python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
+
+  (setq python-shell-interpreter-args "-i")
+#+END_SRC
+
+#+RESULTS:
+: --simple-prompt -i
+
+#+BEGIN_SRC emacs-lisp
+  (defalias 'workon 'pyvenv-workon)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ; Install ein
+  (use-package ein
+    :ensure t)
+
+  ; Install flycheck
+  (use-package flycheck
+    :ensure t)
+
+  ; Install py-autopep8
+  (use-package py-autopep8
+    :ensure t)
+#+END_SRC
+
+** Configure pyvenv
+
+#+BEGIN_SRC emacs-lisp
+  (use-package pyvenv
+    :ensure t
+    :init
+    (setenv "WORKON_HOME" "~/.emacs.d/.python-environments/default/")
+    (pyvenv-mode 1)
+    (pyvenv-tracking-mode 1))
+
+#+END_SRC
 
 * Use smex to handle M-x with ido
 
@@ -2221,6 +2275,7 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** [[http://rix.si/blog/2014/08/02/evil-and-emacs-an-uholy-matrimony/][Evil and Emacs]]
 ** [[https://github.com/chrismccord/dot_emacs][Emacs for a vim user]]
 ** [[http://www.macs.hw.ac.uk/~rs46/posts/2014-01-13-mu4e-email-client.html][Drowning in email, mu4e]]
+** [[https://github.com/kpurdon/kp-emacs][kpurdon emacs config]]
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
@@ -2254,3 +2309,4 @@ mkdir -p ~/.emacs.d/plugins; git clone git://github.com/edwtjo/evil-org-mode.git
 #+BEGIN_SRC sh 
 mkdir -p ~/.emacs.d/plugins; wget 'http://www.gentei.org/~yuuji/software/windows.el' -O ~/.emacs.d/plugins/windows.el
 #+END_SRC
+
