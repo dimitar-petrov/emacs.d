@@ -2161,6 +2161,9 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** Desktop Configuration
 
 #+BEGIN_SRC emacs-lisp
+  (use-package revive
+    :ensure t)
+
   (require 'windows)
   (require 'recentf)
 
