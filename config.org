@@ -451,9 +451,10 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 
 ** Disable evil-mode when in term-mode 
 
+[[http://emacs.stackexchange.com/questions/19992/always-enter-emacs-mode-with-ansi-term][AlwaysEnterEmacsModewithAnsiTerm]]
 #+BEGIN_SRC emacs-lisp
-  (eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
-  (eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
+   (eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
+  ;; (eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
 #+END_SRC
 
 * Org Mode 
@@ -1672,6 +1673,16 @@ Install pinentry
 
 #+END_SRC
 
+* Yasnippet
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t)
+
+  (yas-global-mode 1)
+
+#+END_SRC
+
 * Yaml Mode
 
 Install and enable yaml mode
@@ -1684,6 +1695,15 @@ Install and enable yaml mode
             (lambda ()
               (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 #+END_SRC  
+
+Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-ansible]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ansible
+    :ensure t)
+
+  (add-hook 'yaml-mode-hook '(lambda() (ansible 1)))
+#+END_SRC
 
 * Latex Mode
 ** Export with xelatex
@@ -1806,12 +1826,7 @@ Install and enable yaml mode
   (setq elpy-rpc-backend "jedi")
   (setq python-shell-interpreter "/usr/bin/ipython"
     python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
-
-  (setq python-shell-interpreter-args "-i")
 #+END_SRC
-
-#+RESULTS:
-: --simple-prompt -i
 
 #+BEGIN_SRC emacs-lisp
   (defalias 'workon 'pyvenv-workon)
