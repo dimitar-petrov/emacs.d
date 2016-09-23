@@ -910,6 +910,13 @@ I do not want to get distracted by the same code in the other window, so i want 
           next-headline))))
 #+END_SRC
 
+Searches include archive files
+
+#+BEGIN_SRC emacs-lisp
+  ;; Include agenda archive files when searching for things
+  (setq org-agenda-text-search-extra-files (quote (agenda-archives)))
+#+END_SRC
+
 ** Project Helper Functions (norang)
 
 #+BEGIN_SRC emacs-lisp
@@ -1283,7 +1290,23 @@ I do not want to get distracted by the same code in the other window, so i want 
                                      (0900 1100 1300 1500 1700))))
 
   ;; Display tags farther right
-  (setq org-agenda-tags-column -102)
+  ;; (setq org-agenda-tags-column -102)
+
+  ;; Place tags close to the right-hand side of the window
+  (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
+  (defun place-agenda-tags ()
+    "Put the agenda tags by the right border of the agenda window."
+    (setq org-agenda-tags-column (- 4 (window-width)))
+      (org-agenda-align-tags))
+
+  ;; Vertical align the agenda views
+  (setq org-agenda-prefix-format
+     (quote
+      ((agenda . " %i %-18:c%?-12t% s")
+       (timeline . "  % s")
+       (todo . " %i %-18:c")
+       (tags . " %i %-18:c")
+       (search . " %i %-18:c"))))
 
   ;;
   ;; Agenda sorting functions
@@ -1388,6 +1411,16 @@ I do not want to get distracted by the same code in the other window, so i want 
 #+BEGIN_SRC emacs-lisp
   ;; Use sticky agenda's so they persist
   (setq org-agenda-sticky t)
+#+END_SRC
+
+** Agenda persistent filters
+
+This is a great feature! Persistent agenda filters means if you limit a search with / TAB SomeTag the agenda remembers this filter until you change it.
+
+Enable persistent filters with the following variable 
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-persistent-filter t)
 #+END_SRC
 
 ** Keep tasks with timestamps visible on the global todo lists (norang)
@@ -1559,27 +1592,27 @@ I do not want to get distracted by the same code in the other window, so i want 
                               ("@office" . ?o)
                               ("@home" . ?H)
                               ("@field" . ?f)
+                              ("@reading" . ?r)
                               (:endgroup)
                               ("WAITING" . ?w)
                               ("HOLD" . ?h)
                               ("PERSONAL" . ?P)
                               ("WORK" . ?W)
-                              ("FIELD" . ?F)
                               ("crypt" . ?E)
                               ("NOTE" . ?n)
                               ("CANCELLED" . ?c)
-                              ("SERGEY" . ?s)
-                              ("ALEXEY" . ?a)
-                              ("IVAN" . ?i)
-                              ("DIMITAR" . ?d)
                               ("BELIEF" . ?b)
                               ("FLAGGED" . ??))))
 
   ; Allow setting single tags without the menu
-  (setq org-fast-tag-selection-single-key (quote expert))
+  ;(setq org-fast-tag-selection-single-key (quote expert))
 
   ; For tag searches ignore tasks with scheduled and deadline dates
   (setq org-agenda-tags-todo-honor-ignore-options t)
+
+  ; For fast selection of tags
+  (setq org-use-fast-tag-selection t)
+
 
 #+END_SRC
 
@@ -1607,7 +1640,7 @@ This package allows to translate the strings using Google Translate service dire
 #+BEGIN_SRC emacs-lisp
 
   ; Set default column view headings: Task Effort Clock_Summary
-  (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+  (setq org-columns-default-format "%60ITEM(Task) %20TAGS(Context) %10Effort(Effort){:} %10CLOCKSUM")
 
   ; global Effort estimate values
   ; global STYLE property values for completion
@@ -1945,6 +1978,8 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
 
 #+BEGIN_SRC emacs-lisp
   (setq org-ditaa-jar-path "/usr/share/java/ditaa/ditaa-0_9.jar")
+  (setq org-plantuml-jar-path "/home/dpetrov/src/plantuml.jar")
+
   (setq org-startup-with-inline-images t)
   (use-package org
     :config
@@ -1954,6 +1989,7 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
        'org-babel-load-languages
        '((dot . t)
          (ditaa . t)
+         (plantuml . t)
          (sh . t)
          (http . t)
          (perl . t)
