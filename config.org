@@ -322,37 +322,37 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
 ** Bindings for Evil and Org-mode
 
 #+BEGIN_SRC emacs-lisp
-  (dolist (state '(normal visual))
-;    (evil-define-key state org-mode-map (kbd "C-j") 'org-metadown)
-;    (evil-define-key state org-mode-map (kbd "C-k") 'org-metaup)
-    (evil-define-key state org-mode-map (kbd "<") 'org-metaleft)
-    (evil-define-key state org-mode-map (kbd ">") 'org-metaright)
-;    (evil-define-key state org-mode-map (kbd "M-h") 'org-metaleft)
-;    (evil-define-key state org-mode-map (kbd "M-l") 'org-metaright)
-    (evil-define-key state org-mode-map (kbd "M-J") 'org-shiftmetadown)
-    (evil-define-key state org-mode-map (kbd "M-K") 'org-shiftmetaup)
-    (evil-define-key state org-mode-map (kbd "M-H") 'org-shiftmetaleft)
-    (evil-define-key state org-mode-map (kbd "M-L") 'org-shiftmetaright)
-    (evil-define-key state org-mode-map (kbd "^") 'org-beginning-of-line)
-    (evil-define-key state org-mode-map (kbd "$") 'org-end-of-line))
+    (dolist (state '(normal visual))
+  ;    (evil-define-key state org-mode-map (kbd "C-j") 'org-metadown)
+  ;    (evil-define-key state org-mode-map (kbd "C-k") 'org-metaup)
+      (evil-define-key state org-mode-map (kbd "<") 'org-metaleft)
+      (evil-define-key state org-mode-map (kbd ">") 'org-metaright)
+  ;    (evil-define-key state org-mode-map (kbd "M-h") 'org-metaleft)
+  ;    (evil-define-key state org-mode-map (kbd "M-l") 'org-metaright)
+      (evil-define-key state org-mode-map (kbd "M-J") 'org-shiftmetadown)
+      (evil-define-key state org-mode-map (kbd "M-K") 'org-shiftmetaup)
+      (evil-define-key state org-mode-map (kbd "M-H") 'org-shiftmetaleft)
+      (evil-define-key state org-mode-map (kbd "M-L") 'org-shiftmetaright)
+      (evil-define-key state org-mode-map (kbd "^") 'org-beginning-of-line)
+      (evil-define-key state org-mode-map (kbd "$") 'org-end-of-line))
 
   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
 
-;  (bind-key "J" 'org-agenda-goto-date org-agenda-mode-map)
-;  (bind-key "j" 'evil-next-line org-agenda-mode-map)
-;  (bind-key "k" 'evil-previous-line org-agenda-mode-map)
+  ;  (bind-key "J" 'org-agenda-goto-date org-agenda-mode-map)
+  ;  (bind-key "j" 'evil-next-line org-agenda-mode-map)
+  ;  (bind-key "k" 'evil-previous-line org-agenda-mode-map)
 
-  ;;; evil surround pairs
+    ;;; evil surround pairs
 
-  (defun evil-surround-org-pairs ()
-    (push '(?= . ("=" . "=")) evil-surround-pairs-alist)
-    (push '(?~ . ("~" . "~")) evil-surround-pairs-alist))
+    (defun evil-surround-org-pairs ()
+      (push '(?= . ("=" . "=")) evil-surround-pairs-alist)
+      (push '(?~ . ("~" . "~")) evil-surround-pairs-alist))
 
-  (add-hook 'org-mode-hook 'evil-surround-org-pairs)
+    (add-hook 'org-mode-hook 'evil-surround-org-pairs)
 
-  ;;; get out of editing a source block
+    ;;; get out of editing a source block
 
-  (add-hook 'org-src-mode-map (lambda () (evil-local-set-key 'normal (kbd "Z Z") 'org-edit-src-exit)))
+    (add-hook 'org-src-mode-map (lambda () (evil-local-set-key 'normal (kbd "Z Z") 'org-edit-src-exit)))
 #+END_SRC
 
 ** Display relative numbers for the current buffer
@@ -1934,6 +1934,43 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
     (pyvenv-mode 1)
     (pyvenv-tracking-mode 1))
 
+#+END_SRC
+
+* Octave Mode
+
+#+BEGIN_SRC emacs-lisp
+  (setq auto-mode-alist
+  (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+  (add-hook 'octave-mode-hook
+  (lambda ()
+  (abbrev-mode 1)
+  (auto-fill-mode 1)
+  (if (eq window-system 'x)
+  (font-lock-mode 1))))
+#+END_SRC
+
+* OmniSharp Mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package omnisharp
+    :ensure t
+    :config
+    (progn
+      (add-hook 'csharp-mode-hook 'omnisharp-mode)))
+
+      (setq omnisharp-server-executable-path "/home/dpetrov/src/omnisharp-server/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe")
+
+#+END_SRC
+
+** Company Mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t)
+
+  (eval-after-load 'company
+    '(add-to-list 'company-backends 'company-omnisharp))
 #+END_SRC
 
 * Use smex to handle M-x with ido
