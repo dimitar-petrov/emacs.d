@@ -1876,7 +1876,8 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
            (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))))
 #+END_SRC
 
-* Python Mode
+* Python Mode 
+
 
 #+BEGIN_SRC emacs-lisp
   ; Install python-environment
@@ -1934,6 +1935,52 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
     (pyvenv-mode 1)
     (pyvenv-tracking-mode 1))
 
+#+END_SRC
+
+* Web Mode
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package web-mode
+    :ensure t)
+
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+#+END_SRC
+
+**  Install tidy
+
+#+BEGIN_SRC emacs-lisp
+  (use-package tidy
+    :ensure t)
+#+END_SRC
+
+** COMMENT Reformat HTML/XML, etc (it might be adding invisible characters)
+#+BEGIN_SRC emacs-lisp
+(defun jta-reformat-xml ()
+  "Reformats xml to make it readable (respects current selection)."
+  (interactive)
+  (save-excursion
+    (let ((beg (point-min))
+          (end (point-max)))
+      (if (and mark-active transient-mark-mode)
+          (progn
+            (setq beg (min (point) (mark)))
+            (setq end (max (point) (mark))))
+        (widen))
+      (setq end (copy-marker end t))
+      (goto-char beg)
+      (while (re-search-forward ">\\s-*<" end t)
+        (replace-match ">\n<" t t))
+      (goto-char beg)
+      (indent-region beg end nil))))
 #+END_SRC
 
 * Use smex to handle M-x with ido
