@@ -2357,6 +2357,13 @@ flyspell-mode is enabled for almost everything to help prevent creating document
   (define-key ctl-x-map "C" 'see-you-again)
 #+END_SRC
 
+** Add Transpose Frame
+
+#+BEGIN_SRC emacs-lisp
+  (use-package transpose-frame
+    :ensure t)
+#+END_SRC
+
 * Email Configuration
 ** Configure mu4e
 
