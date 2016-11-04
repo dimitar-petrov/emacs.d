@@ -31,7 +31,7 @@
   (add-to-list 'load-path "~/.emacs.d/plugins/")
 #+END_SRC
 
-* Define Personal Functions  
+* Define Personal Functions
 ** Tone Down Fringes
 #+BEGIN_SRC emacs-lisp
   ;; Function
@@ -1900,10 +1900,11 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
     :ensure t)
 
   (elpy-enable)
-  (elpy-use-ipython)
-  (setq elpy-rpc-backend "jedi")
-  (setq python-shell-interpreter "/usr/bin/ipython"
-    python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
+
+  ;(elpy-use-ipython)
+  ;(setq elpy-rpc-backend "jedi")
+  ;(setq python-shell-interpreter "/usr/bin/ipython"
+  ;      python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1930,7 +1931,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   (use-package pyvenv
     :ensure t
     :init
-    (setenv "WORKON_HOME" "~/.emacs.d/.python-environments/default/")
+    (setenv "WORKON_HOME" "~/.emacs.d/.python-environments/")
     (pyvenv-mode 1)
     (pyvenv-tracking-mode 1))
 
@@ -2016,6 +2017,14 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
   (eval-after-load 'company
     '(add-to-list 'company-backends 'company-omnisharp))
+
+  (use-package company-quickhelp
+    :ensure t)
+
+  (company-quickhelp-mode 1)
+
+  (use-package pos-tip
+    :ensure t)
 #+END_SRC
 
 * Use smex to handle M-x with ido
