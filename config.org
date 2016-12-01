@@ -153,316 +153,7 @@ Here is how we tell Emacs to use the font we want to use.
                '(font . "Source Code Pro-10"))
 #+END_SRC
 
-* Evil Mode
-** Load evil package and enable evil-mode
-:LOGBOOK:
-:END:
-
-In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
-
- #+BEGIN_SRC emacs-lisp
- ;; fix TAB issue in text-mode
-   (setq evil-want-C-i-jump nil)
-
-;; initialize evil
-   (use-package evil
-     :ensure t
-     :config
-     (use-package evil-leader
-       :ensure t
-       :config
-       (global-evil-leader-mode 1)
-       (evil-leader/set-leader ",")
-       (setq evil-leader/in-all-states 1)
-       (evil-leader/set-key "b" 'helm-mini
-         "e" 'helm-find-files
-         "K" 'kill-buffer
-         "y" 'helm-show-kill-ring
-         "j" 'avy-goto-word-1
-         "l" 'avy-goto-line
-         "u" 'undo-tree-visualize
-         "s" 'helm-swoop
-         "n" 'company-yasnippet
-         "k" 'evil-window-next
-         "j" 'evil-window-prev
-         "f" 'evil-prev-buffer
-         "d" 'evil-next-buffer
-         "g" 'org-agenda-filter-by-tag
-         "r" 'org-refile
-         "B" 'org-agenda-bulk-action))
-     (evil-mode))
-
-;;   (use-package evil-args
-;;     :ensure t
-;;     :config
-;;     ;; bind evil-args text objects
-;;     (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
-;;     (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-;;
-;;     ;; bind evil-forward/backward-args
-;;     (define-key evil-normal-state-map "L" 'evil-forward-arg)
-;;     (define-key evil-normal-state-map "H" 'evil-backward-arg)
-;;     (define-key evil-motion-state-map "L" 'evil-forward-arg)
-;;     (define-key evil-motion-state-map "H" 'evil-backward-arg)
-;;
-;;     ;; bind evil-jump-out-args
-;;     (define-key evil-normal-state-map "K" 'evil-jump-out-args))
-
-   (use-package evil-matchit
-     :ensure t
-     :config
-     (global-evil-matchit-mode 1))
-
- #+END_SRC
-
-** Load evil-org
-
-#+BEGIN_SRC emacs-lisp
-    (use-package evil-org
-      :diminish evil-org-mode
-      :load-path "~/.emacs.d/plugins/evil-org-mode")
-    (evil-org-mode t)
-#+END_SRC
-
-** Load evil-surround
-
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-surround
-    :ensure t)
-  (global-evil-surround-mode 1)
-#+END_SRC
-
-** Use escape to get out of as much stuff as possible
-
-#+BEGIN_SRC emacs-lisp
-      (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
-      (define-key minibuffer-local-map (kbd "ESC") 'abort-recursive-edit)
-      (define-key minibuffer-local-ns-map (kbd "ESC") 'abort-recursive-edit)
-      (define-key minibuffer-local-completion-map (kbd "ESC") 'abort-recursive-edit)
-      (define-key minibuffer-local-must-match-map (kbd "ESC") 'abort-recursive-edit)
-      (define-key minibuffer-local-isearch-map (kbd "ESC") 'abort-recursive-edit)
-    ;  (bind-key "<escape>" 'helm-keyboard-quit helm-map)
-    ;  (bind-key "<escape>" 'helm-keyboard-quit helm-comp-read-map)
-
-    ;; Make movement keys work like they should
-    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
-    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-    (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
-    (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-down)
-
-    ; Make horizontal movement cross lines                                    
-    (setq-default evil-cross-lines t)
-#+END_SRC
-
-** Make escape work the way it does in vim
-
-#+BEGIN_SRC emacs-lisp
-  ;; esc quits
-  (defun minibuffer-keyboard-quit ()
-    "Abort recursive edit.
-  In Delete Selection mode, if the mark is active, just deactivate it;
-  then it takes a second \\[keyboard-quit] to abort the minibuffer."
-    (interactive)
-    (if (and delete-selection-mode transient-mark-mode mark-active)
-        (setq deactivate-mark  t)
-      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-      (abort-recursive-edit)))
-  (define-key evil-normal-state-map [escape] 'keyboard-quit)
-  (define-key evil-visual-state-map [escape] 'keyboard-quit)
-  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-  (global-set-key [escape] 'evil-exit-emacs-state)
-
-#+END_SRC
-
-** Toggle Windows Split
-
-#+BEGIN_SRC emacs-lisp
-  (defun dp/window-toggle-split-direction ()
-    "Switch window split from horizontally to vertically, or vice versa. 
-  i.e. change right window to bottom, or change bottom window to right."
-    (interactive)
-    (require 'windmove)
-    (let ((done))
-      (dolist (dirs '((right . down) (down . right)))
-        (unless done
-          (let* ((win (selected-window))
-                 (nextdir (car dirs))
-                 (neighbour-dir (cdr dirs))
-                 (next-win (windmove-find-other-window nextdir win))
-                 (neighbour1 (windmove-find-other-window neighbour-dir win))
-                 (neighbour2 (if next-win (with-selected-window next-win
-                                            (windmove-find-other-window neighbour-dir next-win)))))
-            ;;(message "win: %s\nnext-win: %s\nneighbour1: %s\nneighbour2:%s" win next-win neighbour1 neighbour2)
-            (setq done (and (eq neighbour1 neighbour2)
-                            (not (eq (minibuffer-window) next-win))))
-            (if done
-                (let* ((other-buf (window-buffer next-win)))
-                  (delete-window next-win)
-                  (if (eq nextdir 'right)
-                      (split-window-vertically)
-                    (split-window-horizontally))
-                  (set-window-buffer (windmove-find-other-window neighbour-dir) other-buf))))))))
-#+END_SRC
-
-** COMMENT Outdated Org mode with Evil fails cycle with TAB in terminal emacs 
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
-#+END_SRC
-
-** Bindings for Evil and Org-mode
-
-#+BEGIN_SRC emacs-lisp
-    (dolist (state '(normal visual))
-  ;    (evil-define-key state org-mode-map (kbd "C-j") 'org-metadown)
-  ;    (evil-define-key state org-mode-map (kbd "C-k") 'org-metaup)
-      (evil-define-key state org-mode-map (kbd "<") 'org-metaleft)
-      (evil-define-key state org-mode-map (kbd ">") 'org-metaright)
-  ;    (evil-define-key state org-mode-map (kbd "M-h") 'org-metaleft)
-  ;    (evil-define-key state org-mode-map (kbd "M-l") 'org-metaright)
-      (evil-define-key state org-mode-map (kbd "M-J") 'org-shiftmetadown)
-      (evil-define-key state org-mode-map (kbd "M-K") 'org-shiftmetaup)
-      (evil-define-key state org-mode-map (kbd "M-H") 'org-shiftmetaleft)
-      (evil-define-key state org-mode-map (kbd "M-L") 'org-shiftmetaright)
-      (evil-define-key state org-mode-map (kbd "^") 'org-beginning-of-line)
-      (evil-define-key state org-mode-map (kbd "$") 'org-end-of-line))
-
-  (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
-
-  ;  (bind-key "J" 'org-agenda-goto-date org-agenda-mode-map)
-  ;  (bind-key "j" 'evil-next-line org-agenda-mode-map)
-  ;  (bind-key "k" 'evil-previous-line org-agenda-mode-map)
-
-    ;;; evil surround pairs
-
-    (defun evil-surround-org-pairs ()
-      (push '(?= . ("=" . "=")) evil-surround-pairs-alist)
-      (push '(?~ . ("~" . "~")) evil-surround-pairs-alist))
-
-    (add-hook 'org-mode-hook 'evil-surround-org-pairs)
-
-    ;;; get out of editing a source block
-
-    (add-hook 'org-src-mode-map (lambda () (evil-local-set-key 'normal (kbd "Z Z") 'org-edit-src-exit)))
-#+END_SRC
-
-** Display relative numbers for the current buffer
-
-#+BEGIN_SRC emacs-lisp
-  (use-package relative-line-numbers
-    :ensure t
-    :init)
-  (global-relative-line-numbers-mode)
-
-  (defun relative-abs-line-numbers-format (offset)
-    "The default formatting function.
-  Return the absolute value of OFFSET, converted to string."
-    (if (= 0 offset)
-        (number-to-string (line-number-at-pos))
-      (number-to-string (abs offset))))
-
-  (setq relative-line-numbers-format 'relative-abs-line-numbers-format)
-#+END_SRC
-
-*** Disable line numbers in org-mode
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
-#+END_SRC
-
-** Org-agenda Vim Keybindings
-
- #+BEGIN_SRC emacs-lisp
-      (add-to-list 'evil-motion-state-modes 'org-agenda-mode)
-
-      (eval-after-load 'org-agenda
-       '(progn
-          (evil-set-initial-state 'org-agenda-mode 'normal)
-          (evil-define-key 'normal org-agenda-mode-map
-            (kbd "<RET>") 'org-agenda-switch-to
-            (kbd "\t") 'org-agenda-goto
-
-            "q" 'org-agenda-quit
-            "r" 'org-agenda-redo
-            "S" 'org-save-all-org-buffers
-            "gj" 'org-agenda-goto-date
-            "gJ" 'org-agenda-clock-goto
-            "gm" 'org-agenda-bulk-mark
-            "go" 'org-agenda-open-link
-            "s" 'org-agenda-schedule
-            "+" 'org-agenda-priority-up
-            "," 'org-agenda-priority
-            "-" 'org-agenda-priority-down
-            "y" 'org-agenda-todo-yesterday
-            "n" 'org-agenda-add-note
-            "t" 'org-agenda-todo
-            ":" 'org-agenda-set-tags
-            ";" 'org-timer-set-timer
-            "i" 'org-agenda-clock-in
-            "O" 'org-agenda-clock-out
-   ;;         "I" 'helm-org-task-file-headings
-   ;;         "i" 'org-agenda-clock-in-avy
-   ;;         "O" 'org-agenda-clock-out-avy
-            "u" 'org-agenda-bulk-unmark
-            "x" 'org-agenda-exit
-            "j"  'org-agenda-next-line
-            "k"  'org-agenda-previous-line
-            "vt" 'org-agenda-toggle-time-grid
-            "va" 'org-agenda-archives-mode
-            "vw" 'org-agenda-week-view
-            "vl" 'org-agenda-log-mode
-            "vd" 'org-agenda-day-view
-            "vc" 'org-agenda-show-clocking-issues
-            "g/" 'org-agenda-filter-by-tag
-            "o" 'delete-other-windows
-            "gh" 'org-agenda-holiday
-            "gv" 'org-agenda-view-mode-dispatch
-            "f" 'org-agenda-later
-            "b" 'org-agenda-earlier
-            "c" 'helm-org-capture-templates
-            "e" 'org-agenda-set-effort
-            "n" nil  ; evil-search-next
-            "{" 'org-agenda-manipulate-query-add-re
-            "}" 'org-agenda-manipulate-query-subtract-re
-            "A" 'org-agenda-toggle-archive-tag
-            "." 'org-agenda-goto-today
-            "0" 'evil-digit-argument-or-evil-beginning-of-line
-            "<" 'org-agenda-filter-by-category
-            ">" 'org-agenda-date-prompt
-            "F" 'org-agenda-follow-mode
-            "D" 'org-agenda-deadline
-            "H" 'org-agenda-holidays
-            "J" 'org-agenda-next-date-line
-            "K" 'org-agenda-previous-date-line
-            "L" 'org-agenda-recenter
-   ;;         "P" 'org-agenda-show-priority
-            "R" 'org-agenda-clockreport-mode
-            "Z" 'org-agenda-sunrise-sunset
-            "T" 'org-agenda-show-tags
-            "X" 'org-agenda-clock-cancel
-            "[" 'org-agenda-manipulate-query-add
-            "g\\" 'org-agenda-filter-by-tag-refine
-            "]" 'org-agenda-manipulate-query-subtract)))
-
- #+END_SRC
-
-** Disable evil-mode when in term-mode 
-
-[[http://emacs.stackexchange.com/questions/19992/always-enter-emacs-mode-with-ansi-term][AlwaysEnterEmacsModewithAnsiTerm]]
-#+BEGIN_SRC emacs-lisp
-   (eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
-  ;; (eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
-#+END_SRC
-
-* Org Mode 
+* Org Mode
 ** Install latest org-mode
 
 #+BEGIN_SRC emacs-lisp
@@ -578,11 +269,12 @@ There's a contributed org-checklist that can uncheck the boxes automatically whe
 
 ** COMMENT Add Org-Pomodoro 
 
-;;You can start a pomodoro for the task at point or select one from the last tasks that you clocked time for. Each clocked-in pomodoro starts a timer of 25 minutes and after each pomodoro break timer of 5 minutes is started ;;automatically. Every 4 breaks long break is started with 20 minutes. All values are customizable.
-;;#+BEGIN_SRC emacs-lisp
+You can start a pomodoro for the task at point or select one from the last tasks that you clocked time for. Each clocked-in pomodoro starts a timer of 25 minutes and after each pomodoro break timer of 5 minutes is started ;;automatically. Every 4 breaks long break is started with 20 minutes. All values are customizable.
+
+#+BEGIN_SRC emacs-lisp
 ;;  (use-package org-pomodoro
 ;;    :ensure t)
-;;#+END_SRC
+#+END_SRC
 
 ** Clocking (norang)
    
@@ -845,10 +537,11 @@ I do not want to get distracted by the same code in the other window, so i want 
                (concat org-directory "/NixOrg/*.org.gpg"))
                (file-expand-wildcards
                 (concat org-directory "/NixOrg/roles/*.org.gpg"))
-                (file-expand-wildcards
-                 (concat org-directory "/NixOrg/luxoft/*.org.gpg"))
-               (file-expand-wildcards
-                (concat org-directory "/NixOrg/amdocs/*.org.gpg"))))
+  ;;              (file-expand-wildcards
+  ;;               (concat org-directory "/NixOrg/luxoft/*.org.gpg"))
+  ;;             (file-expand-wildcards
+  ;;              (concat org-directory "/NixOrg/amdocs/*.org.gpg"))
+               ))
 
   (setq org-agenda-span 'day)
 #+END_SRC
@@ -870,55 +563,53 @@ I do not want to get distracted by the same code in the other window, so i want 
 ** COMMENT MobileOrg Configure
 
 #+BEGIN_SRC emacs-lisp
-  ;; Set up org-mobile-directory
-  (setq org-mobile-directory (concat org-directory "/MobileOrg"))
-
-  ;; Set to the name of the file where new notes will be stored
-  (setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
+  ;;;; Set up org-mobile-directory
+  ;;(setq org-mobile-directory (concat org-directory "/MobileOrg"))
+  ;;
+  ;;;; Set to the name of the file where new notes will be stored
+  ;;(setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
 #+END_SRC
 
 
 *** COMMENT Install or-mobile-sync
 
 #+BEGIN_SRC emacs-lisp
-  (use-package org-mobile-sync
-   :ensure t)
-
-  (org-mobile-sync-mode 1)
-
-  ;; Set this for symmetric encryption
-  ;; (setq org-mobile-use-encryption t)
+  ;;(use-package org-mobile-sync
+  ;; :ensure t)
+  ;;
+  ;;(org-mobile-sync-mode 1)
+  ;;
+  ;;;; Set this for symmetric encryption
+  ;;;; (setq org-mobile-use-encryption t)
 #+END_SRC
 
 
 *** COMMENT Sync with mobile org when idle
 
 #+BEGIN_SRC emacs-lisp
+  ;;(defvar my-org-mobile-sync-timer nil)
 
-  (defvar my-org-mobile-sync-timer nil)
+  ;;(defvar my-org-mobile-sync-secs (* 60 20))
 
-  (defvar my-org-mobile-sync-secs (* 60 20))
+  ;;(defun my-org-mobile-sync-pull-and-push ()
+  ;;(org-mobile-pull)
+  ;;(org-mobile-push)
+  ;;(when (fboundp 'sauron-add-event)
+  ;;  (sauron-add-event 'my 3 "Called org-mobile-pull and org-mobile-push")))
 
-  (defun my-org-mobile-sync-pull-and-push ()
-    (org-mobile-pull)
-    (org-mobile-push)
-    (when (fboundp 'sauron-add-event)
-      (sauron-add-event 'my 3 "Called org-mobile-pull and org-mobile-push")))
+  ;;(defun my-org-mobile-sync-start ()
+  ;;  "Start automated `org-mobile-push'"
+  ;;  (interactive)
+  ;;  (setq my-org-mobile-sync-timer
+  ;;        (run-with-idle-timer my-org-mobile-sync-secs t
+  ;;                             'my-org-mobile-sync-pull-and-push)))
 
-  (defun my-org-mobile-sync-start ()
-    "Start automated `org-mobile-push'"
-    (interactive)
-    (setq my-org-mobile-sync-timer
-          (run-with-idle-timer my-org-mobile-sync-secs t
-                               'my-org-mobile-sync-pull-and-push)))
-
-  (defun my-org-mobile-sync-stop ()
-    "Stop automated `org-mobile-push'"
-    (interactive)
-    (cancel-timer my-org-mobile-sync-timer))
+  ;;(defun my-org-mobile-sync-stop ()
+  ;;  "Stop automated `org-mobile-push'"
+  ;;  (interactive)
+  ;;  (cancel-timer my-org-mobile-sync-timer))
 
   ;; (my-org-mobile-sync-start)
-
 #+END_SRC
 
 ** Archiving 
@@ -1875,7 +1566,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
            (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))))
 #+END_SRC
 
-* Python Mode 
+* Python Mode
 
 
 #+BEGIN_SRC emacs-lisp
@@ -1903,8 +1594,10 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
   ;(elpy-use-ipython)
   ;(setq elpy-rpc-backend "jedi")
-  ;(setq python-shell-interpreter "/usr/bin/ipython"
-  ;      python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
+  ;; (setq python-shell-interpreter "/usr/bin/ipython"
+  ;;       python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
+   (setq python-shell-interpreter "python"
+         python-shell-interpreter-args "-i")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1918,7 +1611,8 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
   ; Install flycheck
   (use-package flycheck
-    :ensure t)
+    :ensure t
+    :init (global-flycheck-mode))
 
   ; Install py-autopep8
   (use-package py-autopep8
@@ -1964,23 +1658,23 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
 ** COMMENT Reformat HTML/XML, etc (it might be adding invisible characters)
 #+BEGIN_SRC emacs-lisp
-(defun jta-reformat-xml ()
-  "Reformats xml to make it readable (respects current selection)."
-  (interactive)
-  (save-excursion
-    (let ((beg (point-min))
-          (end (point-max)))
-      (if (and mark-active transient-mark-mode)
-          (progn
-            (setq beg (min (point) (mark)))
-            (setq end (max (point) (mark))))
-        (widen))
-      (setq end (copy-marker end t))
-      (goto-char beg)
-      (while (re-search-forward ">\\s-*<" end t)
-        (replace-match ">\n<" t t))
-      (goto-char beg)
-      (indent-region beg end nil))))
+  ;;(defun jta-reformat-xml ()
+  ;;  "Reformats xml to make it readable (respects current selection)."
+  ;;  (interactive)
+  ;;  (save-excursion
+  ;;    (let ((beg (point-min))
+  ;;          (end (point-max)))
+  ;;      (if (and mark-active transient-mark-mode)
+  ;;          (progn
+  ;;            (setq beg (min (point) (mark)))
+  ;;            (setq end (max (point) (mark))))
+  ;;        (widen))
+  ;;      (setq end (copy-marker end t))
+  ;;      (goto-char beg)
+  ;;      (while (re-search-forward ">\\s-*<" end t)
+  ;;        (replace-match ">\n<" t t))
+  ;;      (goto-char beg)
+  ;;      (indent-region beg end nil))))
 #+END_SRC
 
 * Octave Mode
@@ -2246,9 +1940,9 @@ In order to disable the jumpy scrolling
 
 ** COMMENT Set default browser to eww
 
-;;#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;;  (setq browse-url-browser-function 'eww-browse-url)
-;;#+END_SRC
+#+END_SRC
 
 ** Using flyspell mode to reduce spelling errors
 
@@ -2299,19 +1993,18 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
 ** Install Jammer
 
-
 #+BEGIN_SRC emacs-lisp
-  (use-package jammer
-    :ensure t
-    :init)
+    (use-package jammer
+      :ensure t
+      :init)
   
-    (setq jammer-repeat-delay '1)
-    (setq jammer-repeat-type 'linear)
-    (setq jammer-repeat-window '0.75)
-;;  (setq jammer-block-type 'blacklist)
-    (setq jammer-block-list '("h"))
+      (setq jammer-repeat-delay '1)
+      (setq jammer-repeat-type 'linear)
+      (setq jammer-repeat-window '0.75)
+  ;;  (setq jammer-block-type 'blacklist)
+      (setq jammer-block-list '("h"))
 
-;;  (jammer-mode 1)
+      (jammer-mode 1)
 #+END_SRC
 
 ** Enable winner-mode
@@ -2347,23 +2040,23 @@ flyspell-mode is enabled for almost everything to help prevent creating document
   (add-hook 'dired-mode-hook 'auto-revert-mode)
 #+END_SRC
 
-** Desktop Configuration
+** COMMENT Desktop Configuration
 
 #+BEGIN_SRC emacs-lisp
-  (use-package revive
-    :ensure t)
-
-  (require 'windows)
-  (require 'recentf)
-
-  ;; -- Load the saved windows automatically on boot
-  (add-hook 'window-setup-hook 'resume-windows)
-
-  ;; -- Save place in file
-  (setq-default save-place t)
-
-  ;; --  Use this command to quit and save your setup
-  (define-key ctl-x-map "C" 'see-you-again)
+  ;;(use-package revive
+  ;;  :ensure t)
+  ;;
+  ;;(require 'windows)
+  ;;(require 'recentf)
+  ;;
+  ;;;; -- Load the saved windows automatically on boot
+  ;;(add-hook 'window-setup-hook 'resume-windows)
+  ;;
+  ;;;; -- Save place in file
+  ;;(setq-default save-place t)
+  ;;
+  ;;;; --  Use this command to quit and save your setup
+  ;;(define-key ctl-x-map "C" 'see-you-again)
 #+END_SRC
 
 ** Add Transpose Frame
@@ -2373,8 +2066,24 @@ flyspell-mode is enabled for almost everything to help prevent creating document
     :ensure t)
 #+END_SRC
 
-* Email Configuration
-** Configure mu4e
+** Add Shackle
+
+#+BEGIN_SRC emacs-lisp
+  (use-package shackle
+    :ensure t)
+
+  (setq helm-display-function 'pop-to-buffer)
+
+  (setq shackle-rules '(("\\`\\*helm.*?\\*\\'" :regexp t :align t :ratio 0.46)))
+  (add-to-list 'shackle-rules '(("\\`\\*Org.*?\\*\\'" :regexp t :align t :ratio 0.46)))
+  (add-to-list 'shackle-rules '(("\\`\\CAPTURE.*?\\*\\'" :regexp t :align t :ratio 0.46)))
+  (add-to-list 'shackle-rules '(help-mode :align below))
+  (add-to-list 'shackle-rules '(Org-Capture-mode :align below))
+  (shackle-mode)
+#+END_SRC
+
+** Email Configuration
+*** Configure mu4e
 
 
 #+BEGIN_SRC emacs-lisp
@@ -2391,8 +2100,7 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
     ;; setup some handy shortcuts
     (setq mu4e-maildir-shortcuts
-          '(("/amdocs/INBOX"             . ?a)
-            ("/gmail/INBOX" . ?g)
+          '(("/gmail/INBOX" . ?g)
             ("/gmail/Trash"     . ?t)))
 
     ;; allow for updating mail using 'U' in the main view:
@@ -2448,7 +2156,7 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 
 #+END_SRC
 
-** Configure GNUS
+*** Configure GNUS
 
 #+BEGIN_SRC emacs-lisp
   (setq gnus-select-method
@@ -2488,10 +2196,323 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 #+END_SRC
 
 * Final Configuration
+** Evil Mode
+*** Load evil package and enable evil-mode
+:LOGBOOK:
+:END:
+
+In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
+
+ #+BEGIN_SRC emacs-lisp
+    ;; fix TAB issue in text-mode
+      (setq evil-want-C-i-jump nil)
+
+   ;; initialize evil
+      (use-package evil
+        :ensure t
+        :config
+        (use-package evil-leader
+          :ensure t
+          :config
+          (global-evil-leader-mode 1)
+          (evil-leader/set-leader ",")
+          (setq evil-leader/in-all-states 1)
+          (evil-leader/set-key "b" 'helm-mini
+            "e" 'helm-find-files
+            "q" 'kill-buffer-and-window
+            "y" 'helm-show-kill-ring
+            "j" 'avy-goto-word-1
+            "l" 'avy-goto-line
+            "u" 'undo-tree-visualize
+            "v" 'split-window-right'
+            "," 'other-window'
+            "s" 'helm-swoop
+            "n" 'company-yasnippet
+            "k" 'evil-window-next
+            "j" 'evil-window-prev
+            "h" 'dired-jump'
+            "f" 'evil-prev-buffer
+            "d" 'evil-next-buffer
+            "w" 'save-buffer'
+            "g" 'org-agenda-filter-by-tag
+            "r" 'org-refile
+            "B" 'org-agenda-bulk-action))
+        (evil-mode))
+
+   ;;   (use-package evil-args
+   ;;     :ensure t
+   ;;     :config
+   ;;     ;; bind evil-args text objects
+   ;;     (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+   ;;     (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+   ;;
+   ;;     ;; bind evil-forward/backward-args
+   ;;     (define-key evil-normal-state-map "L" 'evil-forward-arg)
+   ;;     (define-key evil-normal-state-map "H" 'evil-backward-arg)
+   ;;     (define-key evil-motion-state-map "L" 'evil-forward-arg)
+   ;;     (define-key evil-motion-state-map "H" 'evil-backward-arg)
+   ;;
+   ;;     ;; bind evil-jump-out-args
+   ;;     (define-key evil-normal-state-map "K" 'evil-jump-out-args))
+
+      (use-package evil-matchit
+        :ensure t
+        :config
+        (global-evil-matchit-mode 1))
+
+ #+END_SRC
+
+*** Load evil-org
 
 #+BEGIN_SRC emacs-lisp
+    (use-package evil-org
+      :diminish evil-org-mode
+      :load-path "~/.emacs.d/plugins/evil-org-mode")
+    (evil-org-mode t)
+#+END_SRC
+
+*** Load evil-surround
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround
+    :ensure t)
+  (global-evil-surround-mode 1)
+#+END_SRC
+
+*** Use escape to get out of as much stuff as possible
+
+#+BEGIN_SRC emacs-lisp
+      (bind-key "<escape>" 'isearch-cancel isearch-mode-map)
+      (define-key minibuffer-local-map (kbd "ESC") 'abort-recursive-edit)
+      (define-key minibuffer-local-ns-map (kbd "ESC") 'abort-recursive-edit)
+      (define-key minibuffer-local-completion-map (kbd "ESC") 'abort-recursive-edit)
+      (define-key minibuffer-local-must-match-map (kbd "ESC") 'abort-recursive-edit)
+      (define-key minibuffer-local-isearch-map (kbd "ESC") 'abort-recursive-edit)
+    ;  (bind-key "<escape>" 'helm-keyboard-quit helm-map)
+    ;  (bind-key "<escape>" 'helm-keyboard-quit helm-comp-read-map)
+
+    ;; Make movement keys work like they should
+    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-normal-state-map (kbd "C-k") 'evil-scroll-up)
+    (define-key evil-normal-state-map (kbd "C-j") 'evil-scroll-down)
+
+    ; Make horizontal movement cross lines                                    
+    (setq-default evil-cross-lines t)
+#+END_SRC
+
+*** Make escape work the way it does in vim
+
+#+BEGIN_SRC emacs-lisp
+  ;; esc quits
+  (defun minibuffer-keyboard-quit ()
+    "Abort recursive edit.
+  In Delete Selection mode, if the mark is active, just deactivate it;
+  then it takes a second \\[keyboard-quit] to abort the minibuffer."
+    (interactive)
+    (if (and delete-selection-mode transient-mark-mode mark-active)
+        (setq deactivate-mark  t)
+      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+      (abort-recursive-edit)))
+  (define-key evil-normal-state-map [escape] 'keyboard-quit)
+  (define-key evil-visual-state-map [escape] 'keyboard-quit)
+  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+  (global-set-key [escape] 'evil-exit-emacs-state)
+
+#+END_SRC
+
+*** Toggle Windows Split
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/window-toggle-split-direction ()
+    "Switch window split from horizontally to vertically, or vice versa. 
+  i.e. change right window to bottom, or change bottom window to right."
+    (interactive)
+    (require 'windmove)
+    (let ((done))
+      (dolist (dirs '((right . down) (down . right)))
+        (unless done
+          (let* ((win (selected-window))
+                 (nextdir (car dirs))
+                 (neighbour-dir (cdr dirs))
+                 (next-win (windmove-find-other-window nextdir win))
+                 (neighbour1 (windmove-find-other-window neighbour-dir win))
+                 (neighbour2 (if next-win (with-selected-window next-win
+                                            (windmove-find-other-window neighbour-dir next-win)))))
+            ;;(message "win: %s\nnext-win: %s\nneighbour1: %s\nneighbour2:%s" win next-win neighbour1 neighbour2)
+            (setq done (and (eq neighbour1 neighbour2)
+                            (not (eq (minibuffer-window) next-win))))
+            (if done
+                (let* ((other-buf (window-buffer next-win)))
+                  (delete-window next-win)
+                  (if (eq nextdir 'right)
+                      (split-window-vertically)
+                    (split-window-horizontally))
+                  (set-window-buffer (windmove-find-other-window neighbour-dir) other-buf))))))))
+#+END_SRC
+
+*** COMMENT Outdated Org mode with Evil fails cycle with TAB in terminal emacs 
+
+#+BEGIN_SRC emacs-lisp
+  ;;(add-hook 'org-mode-hook
+  ;;          (lambda ()
+  ;;            (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)))
+#+END_SRC
+
+*** Bindings for Evil and Org-mode
+
+#+BEGIN_SRC emacs-lisp
+    (dolist (state '(normal visual))
+  ;    (evil-define-key state org-mode-map (kbd "C-j") 'org-metadown)
+  ;    (evil-define-key state org-mode-map (kbd "C-k") 'org-metaup)
+      (evil-define-key state org-mode-map (kbd "<") 'org-metaleft)
+      (evil-define-key state org-mode-map (kbd ">") 'org-metaright)
+  ;    (evil-define-key state org-mode-map (kbd "M-h") 'org-metaleft)
+  ;    (evil-define-key state org-mode-map (kbd "M-l") 'org-metaright)
+      (evil-define-key state org-mode-map (kbd "M-J") 'org-shiftmetadown)
+      (evil-define-key state org-mode-map (kbd "M-K") 'org-shiftmetaup)
+      (evil-define-key state org-mode-map (kbd "M-H") 'org-shiftmetaleft)
+      (evil-define-key state org-mode-map (kbd "M-L") 'org-shiftmetaright)
+      (evil-define-key state org-mode-map (kbd "^") 'org-beginning-of-line)
+      (evil-define-key state org-mode-map (kbd "$") 'org-end-of-line))
+
+  (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+
+  ;  (bind-key "J" 'org-agenda-goto-date org-agenda-mode-map)
+  ;  (bind-key "j" 'evil-next-line org-agenda-mode-map)
+  ;  (bind-key "k" 'evil-previous-line org-agenda-mode-map)
+
+    ;;; evil surround pairs
+
+    (defun evil-surround-org-pairs ()
+      (push '(?= . ("=" . "=")) evil-surround-pairs-alist)
+      (push '(?~ . ("~" . "~")) evil-surround-pairs-alist))
+
+    (add-hook 'org-mode-hook 'evil-surround-org-pairs)
+
+    ;;; get out of editing a source block
+
+    (add-hook 'org-src-mode-map (lambda () (evil-local-set-key 'normal (kbd "Z Z") 'org-edit-src-exit)))
+#+END_SRC
+
+*** Display relative numbers for the current buffer
+
+#+BEGIN_SRC emacs-lisp
+  (use-package relative-line-numbers
+    :ensure t
+    :init)
+  (global-relative-line-numbers-mode)
+
+  (defun relative-abs-line-numbers-format (offset)
+    "The default formatting function.
+  Return the absolute value of OFFSET, converted to string."
+    (if (= 0 offset)
+        (number-to-string (line-number-at-pos))
+      (number-to-string (abs offset))))
+
+  (setq relative-line-numbers-format 'relative-abs-line-numbers-format)
+#+END_SRC
+
+**** Disable line numbers in org-mode
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook (lambda () (relative-line-numbers-mode 0)))
+#+END_SRC
+
+*** Org-agenda Vim Keybindings
+
+ #+BEGIN_SRC emacs-lisp
+      (add-to-list 'evil-motion-state-modes 'org-agenda-mode)
+
+      (eval-after-load 'org-agenda
+       '(progn
+          (evil-set-initial-state 'org-agenda-mode 'normal)
+          (evil-define-key 'normal org-agenda-mode-map
+            (kbd "<RET>") 'org-agenda-switch-to
+            (kbd "\t") 'org-agenda-goto
+
+            "q" 'org-agenda-quit
+            "r" 'org-agenda-redo
+            "S" 'org-save-all-org-buffers
+            "gj" 'org-agenda-goto-date
+            "gJ" 'org-agenda-clock-goto
+            "gm" 'org-agenda-bulk-mark
+            "go" 'org-agenda-open-link
+            "s" 'org-agenda-schedule
+            "+" 'org-agenda-priority-up
+            "," 'org-agenda-priority
+            "-" 'org-agenda-priority-down
+            "y" 'org-agenda-todo-yesterday
+            "n" 'org-agenda-add-note
+            "t" 'org-agenda-todo
+            ":" 'org-agenda-set-tags
+            ";" 'org-timer-set-timer
+            "i" 'org-agenda-clock-in
+            "O" 'org-agenda-clock-out
+   ;;         "I" 'helm-org-task-file-headings
+   ;;         "i" 'org-agenda-clock-in-avy
+   ;;         "O" 'org-agenda-clock-out-avy
+            "u" 'org-agenda-bulk-unmark
+            "x" 'org-agenda-exit
+            "j"  'org-agenda-next-line
+            "k"  'org-agenda-previous-line
+            "vt" 'org-agenda-toggle-time-grid
+            "va" 'org-agenda-archives-mode
+            "vw" 'org-agenda-week-view
+            "vl" 'org-agenda-log-mode
+            "vd" 'org-agenda-day-view
+            "vc" 'org-agenda-show-clocking-issues
+            "g/" 'org-agenda-filter-by-tag
+            "o" 'delete-other-windows
+            "gh" 'org-agenda-holiday
+            "gv" 'org-agenda-view-mode-dispatch
+            "f" 'org-agenda-later
+            "b" 'org-agenda-earlier
+            "c" 'helm-org-capture-templates
+            "e" 'org-agenda-set-effort
+            "n" nil  ; evil-search-next
+            "{" 'org-agenda-manipulate-query-add-re
+            "}" 'org-agenda-manipulate-query-subtract-re
+            "A" 'org-agenda-toggle-archive-tag
+            "." 'org-agenda-goto-today
+            "0" 'evil-digit-argument-or-evil-beginning-of-line
+            "<" 'org-agenda-filter-by-category
+            ">" 'org-agenda-date-prompt
+            "F" 'org-agenda-follow-mode
+            "D" 'org-agenda-deadline
+            "H" 'org-agenda-holidays
+            "J" 'org-agenda-next-date-line
+            "K" 'org-agenda-previous-date-line
+            "L" 'org-agenda-recenter
+   ;;         "P" 'org-agenda-show-priority
+            "R" 'org-agenda-clockreport-mode
+            "Z" 'org-agenda-sunrise-sunset
+            "T" 'org-agenda-show-tags
+            "X" 'org-agenda-clock-cancel
+            "[" 'org-agenda-manipulate-query-add
+            "g\\" 'org-agenda-filter-by-tag-refine
+            "]" 'org-agenda-manipulate-query-subtract)))
+
+ #+END_SRC
+
+*** COMMENT Disable evil-mode when in term-mode 
+
+[[http://emacs.stackexchange.com/questions/19992/always-enter-emacs-mode-with-ansi-term][AlwaysEnterEmacsModewithAnsiTerm]]
+#+BEGIN_SRC emacs-lisp
+  ;;(eval-after-load 'evil-vars '(evil-set-initial-state 'term-mode 'emacs))
+  ;;(eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
+#+END_SRC
+
+**  Configure Window Saving
+#+BEGIN_SRC emacs-lisp
   ;; -- Set up window saving!! Place at end of .emacs file
-  (win:startup-with-window)
+  ;; (win:startup-with-window)
 #+END_SRC
 
 * Post-steps after cloning the GitHub Repository
