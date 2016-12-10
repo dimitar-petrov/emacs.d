@@ -2516,18 +2516,3 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
   ;; -- Set up window saving!! Place at end of .emacs file
   ;; (win:startup-with-window)
 #+END_SRC
-
-* Post-steps after cloning the GitHub Repository
-
-** Clone the evil-org-mode to plugins since it is not added to Melpa yet
-
-#+BEGIN_SRC sh
-mkdir -p ~/.emacs.d/plugins; git clone git://github.com/edwtjo/evil-org-mode.git ~/.emacs.d/plugins/evil-org-mode
-#+END_SRC
-
-** Get windows.el
-
-#+BEGIN_SRC sh 
-mkdir -p ~/.emacs.d/plugins; wget 'http://www.gentei.org/~yuuji/software/windows.el' -O ~/.emacs.d/plugins/windows.el
-#+END_SRC
-
