@@ -1625,7 +1625,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   (use-package pyvenv
     :ensure t
     :init
-    (setenv "WORKON_HOME" "~/.emacs.d/.python-environments/")
+    (setenv "WORKON_HOME" "~/develop/python/py-envs/")
     (pyvenv-mode 1)
     (pyvenv-tracking-mode 1))
 
@@ -1991,20 +1991,20 @@ flyspell-mode is enabled for almost everything to help prevent creating document
       (message "Dictionary switched to %s" lang)))
 #+END_SRC
 
-** Install Jammer
+** COMMENT Install Jammer
 
 #+BEGIN_SRC emacs-lisp
-    (use-package jammer
-      :ensure t
-      :init)
-  
-      (setq jammer-repeat-delay '1)
-      (setq jammer-repeat-type 'linear)
-      (setq jammer-repeat-window '0.75)
-  ;;  (setq jammer-block-type 'blacklist)
-      (setq jammer-block-list '("h"))
-
-      (jammer-mode 1)
+  ;;  (use-package jammer
+  ;;    :ensure t
+  ;;    :init)
+  ;;
+  ;;    (setq jammer-repeat-delay '1)
+  ;;    (setq jammer-repeat-type 'linear)
+  ;;    (setq jammer-repeat-window '0.75)
+  ;;;;  (setq jammer-block-type 'blacklist)
+  ;;    (setq jammer-block-list '("h"))
+  ;;
+  ;;    (jammer-mode 1)
 #+END_SRC
 
 ** Enable winner-mode
@@ -2511,8 +2511,10 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
   ;;(eval-after-load 'evil-vars '(evil-set-initial-state 'inferior-python-mode 'emacs))
 #+END_SRC
 
-**  Configure Window Saving
+** Configure Window Saving
+
 #+BEGIN_SRC emacs-lisp
   ;; -- Set up window saving!! Place at end of .emacs file
   ;; (win:startup-with-window)
 #+END_SRC
+
