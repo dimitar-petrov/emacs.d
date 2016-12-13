@@ -2038,6 +2038,11 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 #+BEGIN_SRC emacs-lisp
   ;; Auto-refresh dired on file change
   (add-hook 'dired-mode-hook 'auto-revert-mode)
+
+  (use-package dired+
+    :ensure t)
+
+  (diredp-toggle-find-file-reuse-dir 1)
 #+END_SRC
 
 ** COMMENT Desktop Configuration
@@ -2182,6 +2187,8 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 ** [[https://github.com/kpurdon/kp-emacs][kpurdon emacs config]]
 ** [[https://mrblog.nl/emacs/config.html][marcel van der Boom emacs]]
 ** [[https://github.com/mattfidler/my-emacs-startup/blob/master/startup-org.org][mattfinder emacs config - looks similar to norang]]
+** [[http://doc.rix.si/cce/cce-org.html][Emacs Config with Bookmars management]]
+
 * Configure ido (disabled)
 
 #+BEGIN_SRC emacs-lisp
