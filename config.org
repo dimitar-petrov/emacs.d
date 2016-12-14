@@ -1295,7 +1295,7 @@ Enable persistent filters with the following variable
   (setq org-todo-keywords
   (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                 (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
-                (sequence "PHONE" "MEETING" "MUNDANE(u)"))))
+                (type "PHONE" "MEETING" "MUNDANE(u)"))))
 
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
