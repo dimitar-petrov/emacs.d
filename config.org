@@ -1293,8 +1293,9 @@ Enable persistent filters with the following variable
   (setq org-log-state-notes-insert-after-drawers nil)
 
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+  (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+                (sequence "PHONE" "MEETING" "MUNDANE(u)"))))
 
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
@@ -1304,6 +1305,7 @@ Enable persistent filters with the following variable
                 ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
                 ("MEETING" :foreground "yellow" :weight bold)
+                ("MUNDANE" :foreground "cyan" :weight bold)
                 ("PHONE" :foreground "yellow" :weight bold))))
 
   (setq org-todo-state-tags-triggers
