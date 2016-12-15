@@ -930,6 +930,9 @@ Searches include archive files
                   (tags "REFILE"
                         ((org-agenda-overriding-header "Tasks to Refile")
                          (org-tags-match-list-sublevels nil)))
+                  (tags "MUND"
+                        ((org-agenda-overriding-header "Mundane Taks")
+                         (org-tags-match-list-sublevels nil)))
                   (tags-todo "-CANCELLED/!NEXT"
                              ((org-agenda-overriding-header (concat "Project Next Tasks"
                                                                     (if dp/hide-scheduled-and-waiting-next-tasks
@@ -964,7 +967,7 @@ Searches include archive files
                               (org-agenda-todo-ignore-with-date dp/hide-scheduled-and-waiting-next-tasks)
                               (org-agenda-sorting-strategy
                                '(category-keep))))
-                  (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
+                  (tags-todo "REFILE-CANCELLED-WAITING-HOLD/!"
                              ((org-agenda-overriding-header (concat "Standalone Tasks"
                                                                     (if dp/hide-scheduled-and-waiting-next-tasks
                                                                         ""
@@ -1295,7 +1298,7 @@ Enable persistent filters with the following variable
   (setq org-todo-keywords
   (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                 (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
-                (type "PHONE" "MEETING" "MUNDANE(u)"))))
+                (type "PHONE" "MEETING" "MUND(u@/!)"))))
 
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
@@ -1305,13 +1308,14 @@ Enable persistent filters with the following variable
                 ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
                 ("MEETING" :foreground "yellow" :weight bold)
-                ("MUNDANE" :foreground "cyan" :weight bold)
+                ("MUND" :foreground "cyan" :weight bold)
                 ("PHONE" :foreground "yellow" :weight bold))))
 
   (setq org-todo-state-tags-triggers
         (quote (("CANCELLED" ("CANCELLED" . t))
                 ("WAITING" ("WAITING" . t))
                 ("HOLD" ("WAITING") ("HOLD" . t))
+                ("MUND" ("MUND" . t))
                 (done ("WAITING") ("HOLD"))
                 ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
                 ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
