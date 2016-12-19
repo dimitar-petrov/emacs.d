@@ -478,55 +478,53 @@ I do not want to get distracted by the same code in the other window, so i want 
    The following sets a default target file for notes, and defines a global key for capturing new material.
 
 #+BEGIN_SRC emacs-lisp
-    ;; Set to the location of my Org files on the NFS Share
-    (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
+  ;; Set to the location of my Org files on the NFS Share
+  (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
 
-    (setq org-default-notes-file (concat org-directory "/notes.org"))
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
 
-    ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
-    (setq org-capture-templates
-          (quote (("l" "Ledger entries")
-                   ("lm" "MBNA" plain (file
-                                       (concat org-directory "/NixOrg/ledger.dat.gpg"))
-                    "%(org-read-date) %^{Payee} 
-         Liabilities:MBNA 
-         Expenses:%^{Account}  %^{Amount} 
-      ")
-                      ("lc" "Cash" plain
-                       (file
-                        (concat org-directory "/NixOrg/ledger.dat.gpg"))
-                       "%(org-read-date) * %^{Payee} 
-         Expenses:Cash 
-         Expenses:%^{Account}  %^{Amount} 
-      ")
-                  ("t" "Todo" entry (file
-                                     (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                  ("r" "Respond" entry (file
-                                        (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                  ("n" "Note" entry (file
-                                     (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                  ("j" "Journal" entry (file+datetree 
-                                        (concat org-directory "/NixOrg/journal.org.gpg"))
-                   "* %?\n%[jnl.txt]\n%U\n" :clock-in t :clock-resume t)
-                  ("c" "Conditionning" entry (file+datetree 
-                                        (concat org-directory "/NixOrg/journal.org.gpg"))
-                   "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
-                  ("w" "org-protocol" entry (file
-                                             (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* TODO Review %c\n%U\n" :immediate-finish t)
-                  ("m" "Meeting" entry (file
-                                        (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                  ("p" "Phone call" entry (file
-                                           (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                  ("h" "Habit" entry (file
+  ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
+  (setq org-capture-templates
+        (quote (("l" "Ledger entries")
+                ("lm" "MBNA" plain (file
+                                    (concat org-directory "/NixOrg/ledger.dat"))
+                 "%(org-read-date) %^{Payee}
+  Liabilities:MBNA
+  Expenses:%^{Account}  %^{Amount} 
+  ")
+                ("lc" "Cash" plain (file
+                                    (concat org-directory "/NixOrg/ledger.dat"))
+                 "%(org-read-date) * %^{Payee}
+       Expenses:%^{Expense%s}  %^{Amount}
+       Assets:Cash 
+  ")
+                ("t" "Todo" entry (file
+                                   (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("r" "Respond" entry (file
                                       (concat org-directory "/NixOrg/refile.org.gpg"))
-                   "* NEXT %?\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n%U\n%a\n"))))
-
+                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+                ("n" "Note" entry (file
+                                   (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("j" "Journal" entry (file+datetree
+                                      (concat org-directory "/NixOrg/journal.org.gpg"))
+                 "* %?\n%[jnl.txt]\n%U\n" :clock-in t :clock-resume t)
+                ("c" "Conditionning" entry (file+datetree
+                                            (concat org-directory "/NixOrg/journal.org.gpg"))
+                 "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
+                ("w" "org-protocol" entry (file
+                                           (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* TODO Review %c\n%U\n" :immediate-finish t)
+                ("m" "Meeting" entry (file
+                                      (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                ("p" "Phone call" entry (file
+                                         (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                ("h" "Habit" entry (file
+                                    (concat org-directory "/NixOrg/refile.org.gpg"))
+                 "* NEXT %?\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n%U\n%a\n"))))
 #+END_SRC
 
 ** Org Agenda Configuration
@@ -1443,8 +1441,15 @@ Install pinentry
 
     :config
     (add-to-list 'evil-emacs-state-modes 'ledger-report-mode)
-    :mode "\\.dat\\.gpg\\'")
+    :mode "\\.dat\\'")
 
+  (setq ledger-expense-completions
+        (list
+         "" ;; needed for first | for mapconcat
+         "Income:Savings"
+         "Income:Salary"
+         "Assets:Cash" "Assets:Bank"
+         "Expenses:Food" "Expenses:Food:Restraunts" "Expenses:Food:Groceries" "Expenses:Flat:Rent" "Expenses:Flat:Utilities" "Expenses:Goods" "Expenses:Electronics" "Expenses:Electronics:Parts" "Expenses:Transport" "Expenses:Services" "Expenses:Entertainment" "Expenses:Auto:Diesel" "Expenses:Auto:Service" "Expenses:Sport" "Expenses:SelfImprovement"))
 #+END_SRC
 
 * Yasnippet
@@ -1614,8 +1619,8 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   ; Install ein
   (use-package ein
     :ensure t)
-
-  ; Install flycheck
+  
+; Install flycheck
   (use-package flycheck
     :ensure t
     :init (global-flycheck-mode))
@@ -2213,7 +2218,6 @@ flyspell-mode is enabled for almost everything to help prevent creating document
 *** Load evil package and enable evil-mode
 :LOGBOOK:
 :END:
-
 In order to define and use a <leader> prefix for your personal shortcuts you have to install the package evil-leader. In order to work on all buffers (*messages*/*scratch*), evil-leader has to be loaded before evil. [[https://github.com/cofi/evil-leader/issues/10][Evil-leader issue in generic buffers]]
 
  #+BEGIN_SRC emacs-lisp
@@ -2451,7 +2455,6 @@ In order to define and use a <leader> prefix for your personal shortcuts you hav
           (evil-define-key 'normal org-agenda-mode-map
             (kbd "<RET>") 'org-agenda-switch-to
             (kbd "\t") 'org-agenda-goto
-
             "q" 'org-agenda-quit
             "r" 'org-agenda-redo
             "S" 'org-save-all-org-buffers
