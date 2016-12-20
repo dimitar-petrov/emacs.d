@@ -1431,6 +1431,13 @@ Install pinentry
     :ensure t)
 #+END_SRC
 
+** Add ob-python
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ob-ipython
+    :ensure t)
+#+END_SRC
+
 * Ledger Mode
 
 #+BEGIN_SRC emacs-lisp
@@ -1619,15 +1626,18 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   ; Install ein
   (use-package ein
     :ensure t)
-  
-; Install flycheck
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode))
 
-  ; Install py-autopep8
-  (use-package py-autopep8
-    :ensure t)
+  (setq ein:use-auto-complete t)
+
+  
+  ; Install flycheck
+   (use-package flycheck
+     :ensure t
+     :init (global-flycheck-mode))
+
+   ; Install py-autopep8
+   (use-package py-autopep8
+     :ensure t)
 #+END_SRC
 
 ** Configure pyvenv
@@ -1732,6 +1742,21 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
     :ensure t)
 #+END_SRC
 
+* Debugging
+
+** Install RealGUD
+
+#+BEGIN_SRC emacs-lisp
+  (use-package realgud
+    :ensure t)
+#+END_SRC
+
+** Install Isend
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/plugins/isend-mode")
+  (require 'isend) 
+#+END_SRC
 * Use smex to handle M-x with ido
 
 #+BEGIN_SRC emacs-lisp
@@ -1835,6 +1860,7 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
          (http . t)
          (perl . t)
          (python . t)
+         (ipython . t)
          (R . t)))
       (add-to-list 'org-src-lang-modes '("dot" . graphviz-dot))))
 #+END_SRC
@@ -2002,20 +2028,20 @@ flyspell-mode is enabled for almost everything to help prevent creating document
       (message "Dictionary switched to %s" lang)))
 #+END_SRC
 
-** COMMENT Install Jammer
+** Install Jammer
 
 #+BEGIN_SRC emacs-lisp
-  ;;  (use-package jammer
-  ;;    :ensure t
-  ;;    :init)
-  ;;
-  ;;    (setq jammer-repeat-delay '1)
-  ;;    (setq jammer-repeat-type 'linear)
-  ;;    (setq jammer-repeat-window '0.75)
-  ;;;;  (setq jammer-block-type 'blacklist)
-  ;;    (setq jammer-block-list '("h"))
-  ;;
-  ;;    (jammer-mode 1)
+    (use-package jammer
+      :ensure t
+      :init)
+
+      (setq jammer-repeat-delay '1)
+      (setq jammer-repeat-type 'linear)
+      (setq jammer-repeat-window '0.75)
+  ;;  (setq jammer-block-type 'blacklist)
+      (setq jammer-block-list '("h"))
+
+      (jammer-mode 0)
 #+END_SRC
 
 ** Enable winner-mode

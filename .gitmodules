@@ -1,3 +1,6 @@
 [submodule "plugins/evil-org-mode"]
 	path = plugins/evil-org-mode
 	url = git://github.com/edwtjo/evil-org-mode.git
+[submodule "plugins/isend-mode"]
+	path = plugins/isend-mode
+	url = https://github.com/ffevotte/isend-mode.el.git
