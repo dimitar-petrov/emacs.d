@@ -137,11 +137,11 @@ Here's some configuration for bbatsov's solarized themes.
       (bind-key "S-<f11>" 'disable-active-themes)
 #+END_SRC
 
-** Load theme - wheatgrass
+** Load theme - solarized-dark
 
 #+BEGIN_SRC emacs-lisp
   (load-theme 'zenburn t)
-  (switch-theme 'wheatgrass)
+  (switch-theme 'solarized-dark)
 #+END_SRC
 
 * Font
@@ -479,7 +479,7 @@ I do not want to get distracted by the same code in the other window, so i want 
 
 #+BEGIN_SRC emacs-lisp
   ;; Set to the location of my Org files on the NFS Share
-  (setq org-directory "/media/rdisk/new_tree/SelfImprover/OrgModeRepo")
+  (setq org-directory "~/org")
 
   (setq org-default-notes-file (concat org-directory "/notes.org"))
 
@@ -487,43 +487,43 @@ I do not want to get distracted by the same code in the other window, so i want 
   (setq org-capture-templates
         (quote (("l" "Ledger entries")
                 ("lm" "MBNA" plain (file
-                                    (concat org-directory "/NixOrg/ledger.dat"))
+                                    (concat org-directory "/ledger.dat"))
                  "%(org-read-date) %^{Payee}
   Liabilities:MBNA
   Expenses:%^{Account}  %^{Amount} 
   ")
                 ("lc" "Cash" plain (file
-                                    (concat org-directory "/NixOrg/ledger.dat"))
+                                    (concat org-directory "/ledger.dat"))
                  "%(org-read-date) * %^{Payee}
        Expenses:%^{Expense%s}  %^{Amount}
        Assets:Cash 
   ")
                 ("t" "Todo" entry (file
-                                   (concat org-directory "/NixOrg/refile.org.gpg"))
-                 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                                   (concat org-directory "/refile.org.gpg"))
+                 "* TODO %?\n:PROPERTIES:\n:Effort: %^{effort|0:15|0:30|0:45|1:00|2:00|3:00|4:00|5:00|6:00|0:00}\n:END:\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("r" "Respond" entry (file
-                                      (concat org-directory "/NixOrg/refile.org.gpg"))
+                                      (concat org-directory "/refile.org.gpg"))
                  "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
                 ("n" "Note" entry (file
-                                   (concat org-directory "/NixOrg/refile.org.gpg"))
+                                   (concat org-directory "/refile.org.gpg"))
                  "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
                 ("j" "Journal" entry (file+datetree
-                                      (concat org-directory "/NixOrg/journal.org.gpg"))
+                                      (concat org-directory "/journal.org.gpg"))
                  "* %?\n%[jnl.txt]\n%U\n" :clock-in t :clock-resume t)
                 ("c" "Conditionning" entry (file+datetree
-                                            (concat org-directory "/NixOrg/journal.org.gpg"))
+                                            (concat org-directory "/journal.org.gpg"))
                  "* %?\n%[powerEval.txt]\n%U\n" :clock-in t :clock-resume t)
                 ("w" "org-protocol" entry (file
-                                           (concat org-directory "/NixOrg/refile.org.gpg"))
+                                           (concat org-directory "/refile.org.gpg"))
                  "* TODO Review %c\n%U\n" :immediate-finish t)
                 ("m" "Meeting" entry (file
-                                      (concat org-directory "/NixOrg/refile.org.gpg"))
+                                      (concat org-directory "/refile.org.gpg"))
                  "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
                 ("p" "Phone call" entry (file
-                                         (concat org-directory "/NixOrg/refile.org.gpg"))
+                                         (concat org-directory "/refile.org.gpg"))
                  "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
                 ("h" "Habit" entry (file
-                                    (concat org-directory "/NixOrg/refile.org.gpg"))
+                                    (concat org-directory "/refile.org.gpg"))
                  "* NEXT %?\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n%U\n%a\n"))))
 #+END_SRC
 
@@ -532,13 +532,13 @@ I do not want to get distracted by the same code in the other window, so i want 
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files
         (append (file-expand-wildcards
-               (concat org-directory "/NixOrg/*.org.gpg"))
+               (concat org-directory "/*.org.gpg"))
                (file-expand-wildcards
-                (concat org-directory "/NixOrg/roles/*.org.gpg"))
+                (concat org-directory "/roles/*.org.gpg"))
   ;;              (file-expand-wildcards
-  ;;               (concat org-directory "/NixOrg/luxoft/*.org.gpg"))
+  ;;               (concat org-directory "/luxoft/*.org.gpg"))
   ;;             (file-expand-wildcards
-  ;;              (concat org-directory "/NixOrg/amdocs/*.org.gpg"))
+  ;;              (concat org-directory "/amdocs/*.org.gpg"))
                ))
 
   (setq org-agenda-span 'day)
@@ -565,9 +565,8 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;;(setq org-mobile-directory (concat org-directory "/MobileOrg"))
   ;;
   ;;;; Set to the name of the file where new notes will be stored
-  ;;(setq org-mobile-inbox-for-pull (concat org-directory "/NixOrg/flagged.org"))
+  ;;(setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org"))
 #+END_SRC
-
 
 *** COMMENT Install or-mobile-sync
 
@@ -580,7 +579,6 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;;;; Set this for symmetric encryption
   ;;;; (setq org-mobile-use-encryption t)
 #+END_SRC
-
 
 *** COMMENT Sync with mobile org when idle
 
@@ -1288,6 +1286,7 @@ Enable persistent filters with the following variable
 #+END_SRC
 
 ** Logging stuff
+
 #+BEGIN_SRC emacs-lisp
   (setq org-log-done (quote time))
   (setq org-log-into-drawer t)
@@ -1321,6 +1320,7 @@ Enable persistent filters with the following variable
 #+END_SRC
 
 ** Tags (norang)
+
 #+BEGIN_SRC emacs-lisp
   ; Tags with fast selection keys
   (setq org-tag-alist (quote ((:startgroup)
@@ -1376,6 +1376,7 @@ This package allows to translate the strings using Google Translate service dire
 #+END_SRC
 
 ** Task estimate with column mode
+
 #+BEGIN_SRC emacs-lisp
 
   ; Set default column view headings: Task Effort Clock_Summary
@@ -1388,8 +1389,6 @@ This package allows to translate the strings using Google Translate service dire
 #+END_SRC
 
 ** Handling blocked tasks
-
-
 
 Blocked tasks are tasks that have subtasks which are not in a done todo state. Blocked tasks show up in a grayed font by default in the agenda.
 
@@ -1438,6 +1437,15 @@ Install pinentry
     :ensure t)
 #+END_SRC
 
+*** Execute babel blocks without confirmation
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-confirm-babel-evaluate nil)   ;don't prompt me to confirm everytime I want to evaluate a block
+
+  ;;; display/update images in the buffer after I evaluate
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+#+END_SRC
+
 * Ledger Mode
 
 #+BEGIN_SRC emacs-lisp
@@ -1464,6 +1472,11 @@ Install pinentry
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t)
+
+  (setq yas-snippet-dirs
+        '("~/.emacs.d/snippets"                     ;; default colleciton
+          "~/.emacs.d/plugins/personal_snippets"    ;; personal snippets
+          ))
 
   (yas-global-mode 1)
 
@@ -1586,7 +1599,6 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
 * Python Mode
 
-
 #+BEGIN_SRC emacs-lisp
   ; Install python-environment
 
@@ -1698,7 +1710,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   ;;      (indent-region beg end nil))))
 #+END_SRC
 
-* Octave Mode
+* COMMENT Octave Mode
 
 #+BEGIN_SRC emacs-lisp
   (setq auto-mode-alist
@@ -1712,7 +1724,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   (font-lock-mode 1))))
 #+END_SRC
 
-* OmniSharp Mode
+* COMMENT OmniSharp Mode
 
 #+BEGIN_SRC emacs-lisp
   (use-package omnisharp
@@ -1724,14 +1736,14 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
       (setq omnisharp-server-executable-path "/home/dpetrov/src/omnisharp-server/omnisharp-server/OmniSharp/bin/Debug/OmniSharp.exe")
 #+END_SRC
 
-** Company Mode
+* Company Mode
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t)
 
-  (eval-after-load 'company
-    '(add-to-list 'company-backends 'company-omnisharp))
+  ;; (eval-after-load 'company
+  ;;   '(add-to-list 'company-backends 'company-omnisharp))
 
   (use-package company-quickhelp
     :ensure t)
@@ -1757,6 +1769,7 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   (add-to-list 'load-path "~/.emacs.d/plugins/isend-mode")
   (require 'isend) 
 #+END_SRC
+
 * Use smex to handle M-x with ido
 
 #+BEGIN_SRC emacs-lisp
@@ -1856,7 +1869,7 @@ Graphviz and Ditaa make it easier to create diagrams from Emacs. See http://sach
        '((dot . t)
          (ditaa . t)
          (plantuml . t)
-         (sh . t)
+         (shell . t)
          (http . t)
          (perl . t)
          (python . t)
