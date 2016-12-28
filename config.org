@@ -2242,6 +2242,13 @@ flyspell-mode is enabled for almost everything to help prevent creating document
                     (get-new-mail nil)))
 #+END_SRC
 
+** Disable Mouse
+#+BEGIN_SRC emacs-lisp
+  (use-package disable-mouse
+    :ensure t)
+
+  (global-disable-mouse-mode)
+#+END_SRC
 * Links
 ** *[[http://doc.norang.ca/][Norang - Organize Your Life in Plain Text]]*
 ** [[orgmode.org/tmp/worg/org-tutorials/org-latex-export.html][Org-Mode Latex Export]]
