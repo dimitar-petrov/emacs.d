@@ -192,7 +192,7 @@ Use syntax highlighting in source blocks while editing.
 
 Automatically change list bullets. Org-mode has a way to automatically change the list bullets when you change list levels
 
-#+BEGIN_SRC emacs-lispo
+#+BEGIN_SRC emacs-lisp
   (setq org-list-demote-modify-bullet (quote (("+" . "-")
                                               ("*" . "-")
                                               ("1." . "-")
@@ -235,7 +235,7 @@ Automatically change list bullets. Org-mode has a way to automatically change th
   (setq org-expiry-inactive-timestamps t)
 
   ; position the habit graph on the agenda to the right of the default
-  (setq org-habit-graph-column 50)
+  (setq org-habit-graph-column 65)
 
 
 #+END_SRC
@@ -1623,12 +1623,15 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
 
   (elpy-enable)
 
-  ;(elpy-use-ipython)
-  ;(setq elpy-rpc-backend "jedi")
+  (elpy-use-ipython)
+  ;; (setq elpy-rpc-backend "jedi")
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "-i")
+
   ;; (setq python-shell-interpreter "/usr/bin/ipython"
   ;;       python-shell-interpreter-args "--TerminalInteractiveShell.editing_mode=vi --simple-prompt -i")
-   (setq python-shell-interpreter "python"
-         python-shell-interpreter-args "-i")
+  ;; (setq python-shell-interpreter "python"
+  ;;       python-shell-interpreter-args "-i")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1683,6 +1686,29 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
     (pyvenv-mode 1)
     (pyvenv-tracking-mode 1))
 
+#+END_SRC
+
+** Python Debug
+
+#+BEGIN_SRC emacs-lisp
+  (defun dp/python-add-breakpoint ()
+    "Add a break point"
+    (interactive)
+    (newline-and-indent)
+    (insert "import ipdb; ipdb.set_trace()")
+    (highlight-lines-matching-regexp "^[ ]*import ipdb; ipdb.set_trace()"))
+
+  (define-key python-mode-map (kbd "C-c b") 'dp/python-add-breakpoint)
+
+  (defun dp/python-interactive ()
+    "Enter the interactive Python environment"
+    (interactive)
+    (progn
+      (insert "!import code; code.interact(local=vars())")
+      (move-end-of-line 1)
+      (comint-send-input)))
+
+  (global-set-key (kbd "C-c i") 'dp/python-interactive)
 #+END_SRC
 
 * Web Mode
