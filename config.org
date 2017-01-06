@@ -232,6 +232,8 @@ Automatically change list bullets. Org-mode has a way to automatically change th
   (eval-after-load 'org
     '(org-load-modules-maybe t))
 
+  (require 'org-expiry)
+
   (setq org-expiry-inactive-timestamps t)
 
   ; position the habit graph on the agenda to the right of the default
@@ -486,11 +488,11 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
   (setq org-capture-templates
         (quote (("l" "Ledger entries")
-                ("lm" "MBNA" plain (file
+                ("lm" "RAW" plain (file
                                     (concat org-directory "/ledger.dat"))
-                 "%(org-read-date) %^{Payee}
-  Liabilities:MBNA
-  Expenses:%^{Account}  %^{Amount} 
+                 "%(org-read-date) * %^{Payee}
+  %^{FromAccount}
+  %^{ToAccount}  %^{Amount} BGN
   ")
                 ("lc" "Cash" plain (file
                                     (concat org-directory "/ledger.dat"))
@@ -1326,16 +1328,15 @@ Enable persistent filters with the following variable
   ; Tags with fast selection keys
   (setq org-tag-alist (quote ((:startgroup)
                               ("@errand" . ?e)
-                              ("@office" . ?o)
                               ("@home" . ?H)
                               ("@field" . ?f)
-                              ("@reading" . ?r)
+                              ("@read" . ?r)
+                              ("@watch" . ?w)
                               (:endgroup)
-                              ("WAITING" . ?w)
+                              ("WAITING" . ?W)
                               ("HOLD" . ?h)
-                              ("PERSONAL" . ?P)
-                              ("WORK" . ?W)
                               ("crypt" . ?E)
+                              ("PROJECT" . ?p)
                               ("NOTE" . ?n)
                               ("CANCELLED" . ?c)
                               ("BELIEF" . ?b)
@@ -1353,7 +1354,17 @@ Enable persistent filters with the following variable
   ; Allow changing todo states with S-left and S-right skipping all of the normal processing when entering or leaving a todo state.
 
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+  (setq org-complete-tags-always-offer-all-agenda-tags t)
+ 
+  ;; Disable tag inheritance
+  (setq org-use-tag-inheritance t)
+  +
+  ;; Exclude from tag inheritance following tags
+  (setq org-tags-exclude-from-inheritance
+        '("PROJECT"))
 
+  ;; Set org-tags-column
+  (setq org-tags-column 0)
 #+END_SRC
 
 ** org-indent-mode
@@ -1755,6 +1766,12 @@ Install and enable ansible mode [[https://github.com/k1LoW/emacs-ansible][emacs-
   ;;        (replace-match ">\n<" t t))
   ;;      (goto-char beg)
   ;;      (indent-region beg end nil))))
+#+END_SRC
+
+* Speed Type 
+#+BEGIN_SRC emacs-lisp
+  (use-package speed-type
+    :ensure t)
 #+END_SRC
 
 * COMMENT Octave Mode
