@@ -488,7 +488,7 @@ I do not want to get distracted by the same code in the other window, so i want 
   ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
   (setq org-capture-templates
         (quote (("l" "Ledger entries")
-                ("lm" "RAW" plain (file
+                ("lr" "RAW" plain (file
                                     (concat org-directory "/ledger.dat"))
                  "%(org-read-date) * %^{Payee}
   %^{FromAccount}
@@ -1358,7 +1358,7 @@ Enable persistent filters with the following variable
  
   ;; Disable tag inheritance
   (setq org-use-tag-inheritance t)
-  +
+   
   ;; Exclude from tag inheritance following tags
   (setq org-tags-exclude-from-inheritance
         '("PROJECT"))
